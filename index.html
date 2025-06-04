@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2ª Semana Acadêmica de Engenharia Elétrica - IFSC Itajaí</title>
+  <style>
+    :root {
+      --primary: #4f15e6;    /* Roxo */
+      --accent:  #fbf803;    /* Amarelo */
+      --text-light: #ffffff; /* Branco */
+      --bg-light:   #F9F9F9; /* Cinza claro mantido */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { height: 100%; }
+    body { 
+      font-family: 'Arial', sans-serif; 
+      color: #333; 
+      line-height: 1.6;
+      background: var(--bg-light);
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      color: var(--text-light);
+    }
+    header img.logo { height: 50px; }
+    #countdown {
+      margin-left: auto;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background: var(--accent);
+      color: #000;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+
+    main { padding-top: 65px; }
+
+    .hero {
+      height: 100vh;
+      background: url('back_semana.png') center/cover no-repeat fixed;
+      position: relative;
+    }
+
+    /* ------------------ */
+    /* Estilos mobile     */
+    @media (max-width: 768px) {
+      .hero {
+        height: 67vh;
+        background-image: url('back_semana2.png');
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+    }
+
+    section { padding: 60px 20px; }
+    .section-white { background: var(--bg-light); }
+    .section-dark { background: var(--primary); color: var(--text-light); }
+    .container { max-width: 1100px; margin: auto; }
+
+    .info-list { list-style: none; margin: 20px 0; }
+    .info-list li { margin-bottom: 10px; }
+
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 20px; }
+
+    .card {
+      background: var(--text-light);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .card img { width: 100%; height: 250px; object-fit: cover; }
+    .card p { padding: 10px; font-weight: bold; color: #000; }
+
+    h2, h3 { margin-bottom: 20px; color: var(--accent); }
+    .section-dark h2, .section-dark h3 { color: var(--text-light); }
+
+    .schedule-day { margin-bottom: 40px; }
+    .schedule-item { margin: 10px 0; }
+
+    footer {
+      background: #222;
+      color: #ccc;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo_semana.png" alt="Logo Semana Acadêmica" class="logo">
+    <div id="countdown">Carregando tempo...</div>
+  </header>
+  <main>
+    <div class="hero"></div>
+
+    <section class="section-white">
+      <div class="container">
+        <h2>2ª Semana Acadêmica de Engenharia Elétrica</h2>
+        <ul class="info-list">
+          <li>Três dias de palestras, oficinas e apresentações de trabalhos.</li>
+          <li>16/06/2025 a 18/06/2025</li>
+          <li>IFSC - Câmpus Itajaí</li>
+        </ul>
+
+        <!-- Programação atualizada -->
+        <div class="schedule-day">
+          <h3>Dia 1 - 16/06/2025</h3>
+          <div class="schedule-item"><strong>13:30</strong> - Abertura</div>
+          <div class="schedule-item"><strong>14:15</strong> - Palestra</div>
+          <div class="schedule-item"><strong>14:30</strong> - Palestra</div>
+          <div class="schedule-item"><strong>15:00</strong> - Palestra</div>
+          <div class="schedule-item"><strong>15:20 - 15:40</strong> - Intervalo</div>
+          <div class="schedule-item"><strong>15:40</strong> - Palestra</div>
+          <div class="schedule-item"><strong>16:30</strong> - Palestra</div>
+          <div class="schedule-item"><strong>17:00</strong> - Palestra</div>
+          <div class="schedule-item"><strong>17:30</strong> - Retorno</div>
+        </div>
+
+        <div class="schedule-day">
+          <h3>Dia 2 - 17/06/2025</h3>
+          <div class="schedule-item"><strong>13:30</strong> - Palestra (Auditório)</div>
+          <div class="schedule-item"><strong>14:00</strong> - Palestra (Auditório)</div>
+          <div class="schedule-item"><strong>14:30</strong> - Palestra (Auditório)</div>
+          <div class="schedule-item"><strong>15:00</strong> - Palestra (Auditório)</div>
+          <div class="schedule-item"><strong>16:00</strong> - Apresentação de estandes de empresas e projetos do IFSC (Átrio)</div>
+          <div class="schedule-item"><strong>16:30</strong> - Apresentação de estandes de empresas e projetos do IFSC (Átrio)</div>
+          <div class="schedule-item"><strong>17:00</strong> - Apresentação de estandes de empresas e projetos do IFSC (Átrio)</div>
+          <div class="schedule-item"><strong>17:30</strong> - Apresentação de estandes de empresas e projetos do IFSC (Átrio)</div>
+          <div class="schedule-item"><strong>18:30</strong> - Bate-papo com egressos (Auditório)</div>
+          <div class="schedule-item"><strong>19:00</strong> - Bate-papo com egressos (Auditório)</div>
+          <div class="schedule-item"><strong>19:30</strong> - Bate-papo com egressos (Auditório)</div>
+        </div>
+
+        <div class="schedule-day">
+          <h3>Dia 3 - 18/06/2025</h3>
+          <div class="schedule-item"><strong>13:30</strong> - Palestra (Auditório)</div>
+          <div class="schedule-item"><strong>14:00</strong> - Palestra (Auditório)</div>
+          <div class="schedule-item"><strong>14:30</strong> - Palestra (Auditório)</div>
+          <div class="schedule-item"><strong>15:00</strong> - Palestra (Auditório)</div>
+          <div class="schedule-item"><strong>16:00</strong> - Oficina (IFmaker)</div>
+          <div class="schedule-item"><strong>16:30</strong> - Oficina (IFmaker)</div>
+          <div class="schedule-item"><strong>17:00</strong> - Oficina (Átrio)</div>
+          <div class="schedule-item"><strong>17:30</strong> - Oficina (Átrio)</div>
+          <div class="schedule-item"><strong>18:00</strong> - Oficina</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-dark">
+      <div class="container">
+        <h2>Palestrantes</h2>
+        <div class="grid-4">
+          <div class="card"><img src="imagens/palestrante1.jpg" alt="Palestrante 1"><p>Nome 1</p></div>
+          <div class="card"><img src="imagens/palestrante2.jpg" alt="Palestrante 2"><p>Nome 2</p></div>
+          <div class="card"><img src="imagens/palestrante3.jpg" alt="Palestrante 3"><p>Nome 3</p></div>
+          <div class="card"><img src="imagens/palestrante4.jpg" alt="Palestrante 4"><p>Nome 4</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-white">
+      <div class="container">
+        <h2>Bate-papo com Egressos</h2>
+        <div class="grid-4">
+          <div class="card"><img src="imagens/egresso1.jpg" alt="Egresso 1"><p>Egresso 1</p></div>
+          <div class="card"><img src="imagens/egresso2.jpg" alt="Egresso 2"><p>Egresso 2</p></div>
+          <div class="card"><img src="imagens/egresso3.jpg" alt="Egresso 3"><p>Egresso 3</p></div>
+          <div class="card"><img src="imagens/egresso4.jpg" alt="Egresso 4"><p>Egresso 4</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-dark">
+      <div class="container">
+        <h2>Oficinas</h2>
+        <p>Descrição das oficinas que ocorrerão durante o evento. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula.</p>
+      </div>
+    </section>
+
+    <section class="section-white">
+      <div class="container">
+        <h2>Transporte e Locais</h2>
+        <div class="grid-3">
+          <div class="card"><img src="imagens/local1.jpg" alt="Local 1"><p>Elume Park</p></div>
+          <div class="card"><img src="imagens/local2.jpg" alt="Local 2"><p>IFSC Itajaí - Bloco A</p></div>
+          <div class="card"><img src="imagens/local3.jpg" alt="Local 3"><p>IFSC Itajaí - Bloco B</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Organizado por: Diretório Acadêmico de Engenharia Elétrica - IFSC Itajaí</p>
+  </footer>
+
+  <script>
+    // Countdown Timer
+    const endDate = new Date('June 16, 2025 13:30:00').getTime();
+    const countdownEl = document.getElementById('countdown');
+    function updateTimer() {
+      const now = new Date().getTime();
+      const distance = endDate - now;
+      if (distance < 0) {
+        countdownEl.innerHTML = 'Evento Iniciado';
+        clearInterval(timerInterval);
+        return;
+      }
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24))/(1000*60*60));
+      const mins = Math.floor((distance % (1000 * 60 * 60))/(1000*60));
+      const secs = Math.floor((distance % (1000 * 60))/1000);
+      countdownEl.innerHTML = `${days}d ${hours}h ${mins}m ${secs}s`;
+    }
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+  </script>
+</body>
+</html>
