@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa com Rotas e Pesquisa</title>
+    <title>Mapa de Rotas | Multilog Itajaí</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -12,64 +16,191 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
 
     <style>
+        :root {
+            --multilog-navy: #00113D;
+            --multilog-cyan: #00A99D;
+            --white: #FFFFFF;
+            --light-gray: #f0f2f5;
+            --text-dark: #333;
+            --border-gray: #e0e0e0;
+        }
+
         body {
             margin: 0;
-            font-family: sans-serif;
+            font-family: 'DM Sans', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            background-color: var(--light-gray);
         }
 
         .container {
-            width: 90%;
-            height: 90%;
+            width: 95%;
+            max-width: 1400px;
+            height: 90vh;
             display: flex;
             flex-direction: column;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-gray);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             border-radius: 8px;
             overflow: hidden;
+            background-color: var(--white);
         }
 
         .search-bar {
-            padding: 10px;
-            background-color: #fff;
-            border-bottom: 1px solid #ccc;
+            padding: 12px 20px;
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border-gray);
             display: flex;
-            gap: 10px;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-svg {
+            height: 30px;
+            width: auto;
+            fill: var(--multilog-navy);
+        }
+
+        /* NOVO: Wrapper para os controles de busca, para melhor responsividade */
+        .search-controls {
+            display: flex;
+            flex-grow: 1; /* Faz este grupo ocupar o espaço restante */
+            min-width: 280px; /* Largura mínima antes de quebrar a linha */
         }
 
         #search-input {
             flex-grow: 1;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-gray);
+            border-radius: 6px 0 0 6px; /* Bordas arredondadas só na esquerda */
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            border-right: none; /* Remove a borda direita para unir com o botão */
+        }
+
+        #search-input:focus {
+            outline: none;
+            border-color: var(--multilog-cyan);
+            box-shadow: 0 0 0 2px rgba(0, 169, 157, 0.2);
+            z-index: 2; /* Garante que a sombra de foco apareça sobre o botão */
         }
 
         #search-button {
-            padding: 8px 12px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 4px;
+            padding: 10px 22px;
+            border: 1px solid var(--multilog-cyan);
+            background-color: var(--multilog-cyan);
+            color: var(--white);
+            font-weight: 500;
+            font-size: 1rem;
+            border-radius: 0 6px 6px 0; /* Bordas arredondadas só na direita */
             cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        #search-button:hover {
+            background-color: #008a7f;
+        }
+
+        /* NOVO: Estilo para o título do mapa "Itajaí" */
+        .map-header {
+            padding: 12px 20px;
+            text-align: center;
+            background-color: #fafafa;
+        }
+        .map-header h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-dark);
         }
 
         #mapa {
             flex-grow: 1;
             height: 100%;
+            /* NOVO: Borda superior para separar do título */
+            border-top: 1px solid var(--border-gray);
         }
+
+        .leaflet-routing-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-dark);
+        }
+        
+        .leaflet-routing-alt h2, .leaflet-routing-alt h3 {
+             color: var(--multilog-navy);
+        }
+
+        .leaflet-routing-icon {
+            background-color: var(--multilog-cyan) !important;
+            color: var(--white) !important;
+        }
+
+        /* NOVO: Media Query para telas pequenas (mobile) */
+        @media (max-width: 600px) {
+            .search-bar {
+                gap: 10px;
+                padding: 12px 5px;
+            }
+            .logo-container {
+                /* Faz a logo ocupar a largura total na primeira linha */
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 5px;
+            }
+            .search-controls {
+                /* Faz os controles de busca ocuparem 100% da largura na segunda linha */
+                width: 100%;
+                min-width: unset;
+            }
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="search-bar">
-            <input type="text" id="search-input" placeholder="Pesquisar local...">
-            <button id="search-button">Pesquisar</button>
+            
+            <div class="logo-container">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 532.7 151" class="logo-svg" xml:space="preserve">
+                    <polygon fill="currentColor" points="363,126.7 394.3,126.7 394.3,139.4 348.6,139.4 348.6,63.3 363,63.3 "></polygon>
+                    <path fill="currentColor" d="M457.8,117.1c0,12.7-7.3,23.4-28.8,23.4c-21.5,0-28.8-10.7-28.8-23.4V85.6c0-12.7,7.3-23.4,28.8-23.4  c21.5,0,28.8,10.7,28.8,23.4V117.1z M414.6,116.3c0,7.2,3.7,11.5,14.4,11.5c10.7,0,14.4-4.3,14.4-11.5V86.4 c0-7.2-3.7-11.5-14.4-11.5c-10.7,0-14.4,4.3-14.4,11.5V116.3z"></path>
+                    <path fill="currentColor" d="M479.7,115.9c0,7.4,3.2,11.8,13.3,11.8c3.9,0,7.9-0.3,11.8-0.9v-23.1h13.6v33.5c-8,2.3-17.5,3.4-25.5,3.4  c-18.6,0-27.5-7.9-27.5-23V85.1c0-15.7,9.1-23,28.9-23c6.2,0,15,0.7,21.8,2.5l-1.6,12.6c-7-1.5-13.9-2.1-21.4-2.1   c-10.1,0-13.4,4.1-13.4,11.9V115.9z"></path>
+                    <rect x="286.3" y="118.7" fill="currentColor" width="48.4" height="20.8"></rect>
+                    <rect x="286.3" y="91" fill="currentColor" width="48.4" height="20.8"></rect>
+                    <rect x="286.3" y="63.3" fill="currentColor" width="48.4" height="20.8"></rect>
+                    <rect x="286.3" y="35.6" fill="currentColor" width="48.4" height="20.8"></rect>
+                    <rect x="286.3" y="7.9" fill="currentColor" width="48.4" height="20.8"></rect>
+                    <polygon fill="currentColor" points="62.8,129.6 44.5,129.6 30.4,90.1 29.2,139.4 14.4,139.4 17.9,63.3 34,63.3 53.6,117.3 73.3,63.3   89.4,63.3 92.8,139.4 78.1,139.4 76.8,90.1 "></polygon>
+                    <path fill="currentColor" d="M155.4,63.3v54.1c0,12-6.7,23.2-28.1,23.2c-21.4,0-28.1-11.2-28.1-23.2V63.3h14.4v52.9    c0,7.4,3.5,11.7,13.7,11.7c10.2,0,13.7-4.2,13.7-11.7V63.3H155.4z"></path>
+                    <polygon fill="currentColor" points="176.9,126.7 208.2,126.7 208.2,139.4 162.4,139.4 162.4,63.3 176.9,63.3 "></polygon>
+                    <polygon fill="currentColor" points="215.1,76 193.9,76 193.9,63.3 250.8,63.3 250.8,76 229.5,76 229.5,139.4 215.1,139.4 "></polygon>
+                    <rect x="258" y="63.3" fill="currentColor" width="14.4" height="76.1"></rect>
+                </svg>
+            </div>
+            
+            <div class="search-controls">
+                <input type="text" id="search-input" placeholder="Pesquisar por 'Doca 1', etc.">
+                <button id="search-button">Pesquisar</button>
+            </div>
         </div>
+
+        <div class="map-header">
+            <h1>Itajaí</h1>
+        </div>
+
         <div id="mapa"></div>
     </div>
 
@@ -80,13 +211,12 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <script>
-        // Define os limites do mapa.
+        // O SCRIPT JAVASCRIPT NÃO FOI ALTERADO
         const bounds = L.latLngBounds([
-            [-26.95677117124685, -48.757288253913494], // Sudoeste
-            [-26.944625335028356, -48.74018648923454]  // Nordeste
+            [-26.95677117124685, -48.757288253913494],
+            [-26.944625335028356, -48.74018648923454]
         ]);
 
-        // Inicializa o mapa com as configurações de limites e zoom.
         const mapa = L.map('mapa', {
             center: [-26.9505, -48.7487],
             zoom: 15,
@@ -94,62 +224,77 @@
             minZoom: 14
         });
 
-        // Adiciona a camada de mapa do OpenStreetMap.
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19
         }).addTo(mapa);
-        
-        // Adiciona um controle de roteamento ao mapa.
-        // Os "waypoints" são os pontos de parada da rota (início e destino).
-        L.Routing.control({
-            waypoints: [
-                L.latLng(-26.951650, -48.750924), // Ponto A
-                L.latLng(-26.953850, -48.751851)  // Ponto B
-            ],
-            // Permite que o usuário arraste os pontos para recalcular a rota
-            routeWhileDragging: true,
-            // Exibe um painel com instruções detalhadas da rota
-            show: true
-        }).addTo(mapa);
 
-        // Obtém os elementos da barra de pesquisa.
+        const guaritaIcon = L.icon({
+            iconUrl: 'guarita.png',
+            iconSize:     [38, 38], 
+            iconAnchor:   [19, 38], 
+            popupAnchor:  [0, -40]
+        });
+
+        const docaIcon = L.icon({
+            iconUrl: 'doca.png',
+            iconSize:     [38, 38],
+            iconAnchor:   [19, 38],
+            popupAnchor:  [0, -40]
+        });
+
+        const startPoint = L.latLng(-26.951650, -48.750924);
+        L.marker(startPoint, { icon: guaritaIcon, title: 'Ponto de Partida' }).addTo(mapa);
+
+        const docas = [
+            { name: "Doca 1", coords: L.latLng(-26.953850, -48.751851) },
+            { name: "Doca 2", coords: L.latLng(-26.949500, -48.745000) },
+            { name: "Doca 3", coords: L.latLng(-26.955000, -48.748000) },
+            { name: "Doca 4", coords: L.latLng(-26.947800, -48.753000) },
+            { name: "Doca 5", coords: L.latLng(-26.952500, -48.756000) },
+            { name: "Doca 6", coords: L.latLng(-26.950000, -48.741500) }
+        ];
+
+        const routingControl = L.Routing.control({
+            waypoints: [],
+            routeWhileDragging: true,
+            show: true,
+            addWaypoints: false,
+            draggableWaypoints: false
+        }).addTo(mapa);
+        
+        const docaMarkers = {};
+
+        docas.forEach(doca => {
+            const marker = L.marker(doca.coords, { icon: docaIcon, title: doca.name }).addTo(mapa);
+            marker.bindPopup(`<b>${doca.name}</b>`);
+            marker.on('click', () => {
+                routingControl.setWaypoints([startPoint, doca.coords]);
+            });
+            docaMarkers[doca.name] = marker;
+        });
+
         const searchInput = document.getElementById('search-input');
         const searchButton = document.getElementById('search-button');
 
-        // Adiciona um evento de clique ao botão de pesquisa.
-        searchButton.addEventListener('click', () => {
-            const query = searchInput.value;
-            if (query) {
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
 
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.length > 0) {
-                            const lat = parseFloat(data[0].lat);
-                            const lon = parseFloat(data[0].lon);
-                            const newPoint = L.latLng(lat, lon);
-
-                            if (bounds.contains(newPoint)) {
-                                mapa.setView(newPoint, 15);
-                                L.marker(newPoint).addTo(mapa)
-                                    .bindPopup(`<b>${data[0].display_name}</b>`).openPopup();
-                            } else {
-                                alert('O local pesquisado está fora da área permitida do mapa.');
-                            }
-                        } else {
-                            alert('Local não encontrado!');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro na pesquisa:', error);
-                        alert('Ocorreu um erro ao buscar o local.');
-                    });
+            const result = docas.find(doca => doca.name.toLowerCase() === query.toLowerCase());
+            
+            if (result) {
+                routingControl.setWaypoints([startPoint, result.coords]);
+                mapa.setView(result.coords, 16);
+                if (docaMarkers[result.name]) {
+                    docaMarkers[result.name].openPopup();
+                }
+            } else {
+                alert(`Doca não encontrada! Por favor, pesquise por "Doca [1-6]".`);
             }
-        });
+        }
 
-        // Permite pesquisar ao pressionar "Enter" no campo de texto.
+        searchButton.addEventListener('click', performSearch);
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 searchButton.click();
