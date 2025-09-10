@@ -55,7 +55,7 @@
             display: flex;
             gap: 15px;
             align-items: center;
-            flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
+            flex-wrap: wrap; 
         }
         
         .logo-container {
@@ -69,29 +69,28 @@
             fill: var(--multilog-navy);
         }
 
-        /* NOVO: Wrapper para os controles de busca, para melhor responsividade */
         .search-controls {
             display: flex;
-            flex-grow: 1; /* Faz este grupo ocupar o espaço restante */
-            min-width: 280px; /* Largura mínima antes de quebrar a linha */
+            flex-grow: 1;
+            min-width: 280px;
         }
 
         #search-input {
             flex-grow: 1;
             padding: 10px 15px;
             border: 1px solid var(--border-gray);
-            border-radius: 6px 0 0 6px; /* Bordas arredondadas só na esquerda */
+            border-radius: 6px 0 0 6px;
             font-size: 1rem;
             font-family: 'DM Sans', sans-serif;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            border-right: none; /* Remove a borda direita para unir com o botão */
+            border-right: none;
         }
 
         #search-input:focus {
             outline: none;
             border-color: var(--multilog-cyan);
             box-shadow: 0 0 0 2px rgba(0, 169, 157, 0.2);
-            z-index: 2; /* Garante que a sombra de foco apareça sobre o botão */
+            z-index: 2;
         }
 
         #search-button {
@@ -101,7 +100,7 @@
             color: var(--white);
             font-weight: 500;
             font-size: 1rem;
-            border-radius: 0 6px 6px 0; /* Bordas arredondadas só na direita */
+            border-radius: 0 6px 6px 0;
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
@@ -110,23 +109,50 @@
             background-color: #008a7f;
         }
 
-        /* NOVO: Estilo para o título do mapa "Itajaí" */
         .map-header {
-            padding: 12px 20px;
+            padding: 8px 20px;
             text-align: center;
             background-color: #fafafa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .map-header h1 {
             margin: 0;
             font-size: 1.25rem;
             font-weight: 500;
             color: var(--text-dark);
+            flex-grow: 1;
+            text-align: center;
         }
+
+        #print-button {
+            padding: 6px 12px;
+            background-color: transparent;
+            border: 1px solid var(--border-gray);
+            color: var(--text-dark);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        #print-button:hover {
+            background-color: #f0f0f0;
+            border-color: #ccc;
+        }
+        #print-button svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
 
         #mapa {
             flex-grow: 1;
             height: 100%;
-            /* NOVO: Borda superior para separar do título */
             border-top: 1px solid var(--border-gray);
         }
 
@@ -147,22 +173,52 @@
             color: var(--white) !important;
         }
 
-        /* NOVO: Media Query para telas pequenas (mobile) */
         @media (max-width: 600px) {
             .search-bar {
                 gap: 10px;
-                padding: 12px 5px;
             }
             .logo-container {
-                /* Faz a logo ocupar a largura total na primeira linha */
                 width: 100%;
                 justify-content: center;
                 margin-bottom: 5px;
             }
             .search-controls {
-                /* Faz os controles de busca ocuparem 100% da largura na segunda linha */
                 width: 100%;
                 min-width: unset;
+            }
+            .map-header h1 {
+                text-align: left;
+            }
+        }
+        
+        @media print {
+            body, .container {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                box-shadow: none;
+                border: none;
+            }
+
+            .search-bar, #print-button, .leaflet-control-zoom, .leaflet-routing-container {
+                display: none !important;
+            }
+
+            .map-header {
+                text-align: center;
+                padding: 10px 0;
+                background-color: var(--white);
+            }
+
+            .map-header h1 {
+                font-size: 16pt;
+            }
+
+            #mapa {
+                width: 100% !important;
+                height: 90vh !important;
+                border: none;
             }
         }
 
@@ -174,7 +230,7 @@
         <div class="search-bar">
             
             <div class="logo-container">
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 532.7 151" class="logo-svg" xml:space="preserve">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 532.7 151" class="logo-svg" xml:space="preserve">
                     <polygon fill="currentColor" points="363,126.7 394.3,126.7 394.3,139.4 348.6,139.4 348.6,63.3 363,63.3 "></polygon>
                     <path fill="currentColor" d="M457.8,117.1c0,12.7-7.3,23.4-28.8,23.4c-21.5,0-28.8-10.7-28.8-23.4V85.6c0-12.7,7.3-23.4,28.8-23.4  c21.5,0,28.8,10.7,28.8,23.4V117.1z M414.6,116.3c0,7.2,3.7,11.5,14.4,11.5c10.7,0,14.4-4.3,14.4-11.5V86.4 c0-7.2-3.7-11.5-14.4-11.5c-10.7,0-14.4,4.3-14.4,11.5V116.3z"></path>
                     <path fill="currentColor" d="M479.7,115.9c0,7.4,3.2,11.8,13.3,11.8c3.9,0,7.9-0.3,11.8-0.9v-23.1h13.6v33.5c-8,2.3-17.5,3.4-25.5,3.4  c-18.6,0-27.5-7.9-27.5-23V85.1c0-15.7,9.1-23,28.9-23c6.2,0,15,0.7,21.8,2.5l-1.6,12.6c-7-1.5-13.9-2.1-21.4-2.1   c-10.1,0-13.4,4.1-13.4,11.9V115.9z"></path>
@@ -199,6 +255,10 @@
 
         <div class="map-header">
             <h1>Itajaí</h1>
+            <button id="print-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H352v96h64V64c0-35.3-28.7-64-64-64H128zM64 352h32c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32H64c-17.7 0-32-14.3-32-32V384c0-17.7 14.3-32 32-32zm384-32c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32h-32c-17.7 0-32-14.3-32-32V384c0-17.7 14.3-32 32-32h32zM384 160H128V128H64v32c0 17.7 14.3 32 32 32h320c17.7 0 32-14.3 32-32V128h-64v32zM160 256c-17.7 0-32 14.3-32 32v64c0 17.7 14.3 32 32 32h192c17.7 0 32-14.3 32-32V288c0-17.7-14.3-32-32-32H160z"/></svg>
+                <span>Imprimir</span>
+            </button>
         </div>
 
         <div id="mapa"></div>
@@ -211,17 +271,19 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <script>
-        // O SCRIPT JAVASCRIPT NÃO FOI ALTERADO
+        // MODIFICADO: Limites do mapa mais restritos
         const bounds = L.latLngBounds([
-            [-26.95677117124685, -48.757288253913494],
-            [-26.944625335028356, -48.74018648923454]
+            [-26.957, -48.758], // Sudoeste
+            [-26.946, -48.740]  // Nordeste
         ]);
 
+        // MODIFICADO: Zoom mínimo e máximo definidos
         const mapa = L.map('mapa', {
             center: [-26.9505, -48.7487],
             zoom: 15,
             maxBounds: bounds,
-            minZoom: 14
+            minZoom: 15,
+            maxZoom: 18
         });
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -285,6 +347,8 @@
             
             if (result) {
                 routingControl.setWaypoints([startPoint, result.coords]);
+                // A linha abaixo para centralizar o mapa foi mantida, 
+                // mas o zoom será limitado pelo minZoom/maxZoom do mapa.
                 mapa.setView(result.coords, 16);
                 if (docaMarkers[result.name]) {
                     docaMarkers[result.name].openPopup();
@@ -299,6 +363,11 @@
             if (e.key === 'Enter') {
                 searchButton.click();
             }
+        });
+
+        const printButton = document.getElementById('print-button');
+        printButton.addEventListener('click', () => {
+            window.print();
         });
     </script>
 </body>
