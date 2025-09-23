@@ -54,9 +54,50 @@
         .route-table .route-actions button { background: none; border: none; cursor: pointer; padding: 4px; opacity: 0.7; transition: opacity 0.2s; }
         .route-table .route-actions button:hover { opacity: 1; }
         
-        /* Classe para esconder conteúdo inativo */
         .tab-content.hidden {
             display: none;
+        }
+
+        /* --- ESTILOS PARA TELAS MENORES (RESPONSIVO) --- */
+        @media (max-width: 800px) {
+            .dashboard-container {
+                padding: 12px; /* Reduz o espaçamento geral */
+            }
+            header h1 {
+                font-size: 1.5rem; /* Reduz o título principal */
+            }
+            .main-nav a {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+            .kpi-card {
+                padding: 12px;
+                gap: 12px;
+            }
+            .kpi-card .text h3 {
+                font-size: 1.5rem; /* Reduz o número do KPI */
+            }
+            .kpi-card .text p {
+                font-size: 0.9rem;
+            }
+            .main-content {
+                grid-template-columns: 1fr; /* Força uma única coluna */
+            }
+            #mapa {
+                min-height: 400px; /* Altura menor para o mapa em telas pequenas */
+                height: 50vh;
+            }
+            .card {
+                padding: 16px;
+            }
+            .card-header {
+                flex-direction: column; /* Empilha o título e o botão de "Adicionar Rota" */
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .route-table {
+                overflow-x: auto; /* Adiciona scroll horizontal na tabela se necessário */
+            }
         }
     </style>
 </head>
@@ -80,7 +121,7 @@
             </div>
             <div class="main-content">
                 <div class="card">
-                    <h2>Localização da Frota em Tempo Real</h2>
+                    <h2 style="border: none; padding-bottom: 0; margin-bottom: 16px;">Localização da Frota em Tempo Real</h2>
                     <div id="mapa"></div>
                 </div>
                 <div class="card vehicle-list">
@@ -151,8 +192,7 @@
         ].forEach(truck => L.marker(truck.position, { icon: truckIcon }).addTo(mapa).bindPopup(truck.popup));
         
         [
-            { name: "AZ1", coords: L.latLng(-26.9535299, -48.7505575) },
-            { name: "AZ2", coords: L.latLng(-26.9562354, -48.7495152) },
+            { name: "AZ1", coords: L.latLng(-26.9535299, -48.7505575) }, { name: "AZ2", coords: L.latLng(-26.9562354, -48.7495152) },
             { name: "AZ4", coords: L.latLng(-26.9514142, -48.7501463) }
         ].forEach(doca => L.marker(doca.coords, { icon: docaIcon, title: doca.name}).addTo(mapa).bindPopup(`<b>${doca.name}</b>`));
 
@@ -164,26 +204,14 @@
             navLinks.forEach(link => {
                 link.addEventListener('click', (event) => {
                     event.preventDefault();
-                    
-                    // Remove 'active' de todos os links
                     navLinks.forEach(nav => nav.classList.remove('active'));
-                    // Adiciona 'active' no link clicado
                     link.classList.add('active');
-
                     const targetTab = link.getAttribute('data-tab');
-
-                    // Esconde todos os conteúdos
-                    tabContents.forEach(content => {
-                        content.classList.add('hidden');
-                    });
-
-                    // Mostra o conteúdo alvo
+                    tabContents.forEach(content => content.classList.add('hidden'));
                     document.getElementById(targetTab).classList.remove('hidden');
-
-                    // Invalida o tamanho do mapa se a aba do dashboard for selecionada
-                    // Isso corrige um problema de renderização do Leaflet quando ele está em uma div escondida
                     if (targetTab === 'dashboard') {
-                        mapa.invalidateSize();
+                        // Atrasar a invalidação para garantir que a div está visível
+                        setTimeout(() => mapa.invalidateSize(), 10);
                     }
                 });
             });
