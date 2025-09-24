@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Gerenciamento | Multilog</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,12 +20,9 @@
         .dashboard-container { display: flex; flex-direction: column; padding: 24px; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         header h1 { font-size: 2rem; margin: 0; color: var(--multilog-navy); }
-        
         .main-nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border-gray); }
         .main-nav a { padding: 12px 18px; text-decoration: none; color: var(--text-light); font-weight: 500; border-bottom: 3px solid transparent; cursor: pointer; }
         .main-nav a.active { color: var(--multilog-navy); border-bottom-color: var(--multilog-navy); }
-        .main-nav a:hover { color: var(--multilog-navy); }
-
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 24px; }
         .kpi-card { background-color: var(--white); padding: 20px; border-radius: 8px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; }
         .kpi-card .icon { padding: 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -38,75 +36,28 @@
         #mapa { width: 100%; height: 100%; min-height: 600px; border-radius: 8px; }
         .vehicle-list ul { list-style: none; padding: 0; margin: 0; max-height: 550px; overflow-y: auto; }
         .vehicle-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-gray); }
-        .vehicle-list li:last-child { border-bottom: none; }
-        .vehicle-info strong { display: block; }
-        .vehicle-info span { font-size: 0.9rem; color: var(--text-light); }
         .status { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem; }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; }
         .status.green { color: var(--green); } .status.green .status-dot { background-color: var(--green); }
         .status.yellow { color: var(--yellow); } .status.yellow .status-dot { background-color: var(--yellow); }
         .status.gray { color: var(--text-light); } .status.gray .status-dot { background-color: var(--text-light); }
-
         .btn-primary { padding: 10px 20px; background-color: var(--multilog-cyan); color: var(--white); border: none; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer; text-decoration: none;}
         .route-table table { width: 100%; border-collapse: collapse; }
         .route-table th, .route-table td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-gray); }
-        .route-table th { color: var(--text-light); font-size: 0.9rem; }
-        .route-table .route-actions button { background: none; border: none; cursor: pointer; padding: 4px; opacity: 0.7; transition: opacity 0.2s; }
-        .route-table .route-actions button:hover { opacity: 1; }
-        
-        .tab-content.hidden {
-            display: none;
-        }
+        .route-table .route-actions button { background: none; border: none; cursor: pointer; opacity: 0.7; }
+        .tab-content.hidden { display: none; }
 
-        /* --- ESTILOS PARA TELAS MENORES (RESPONSIVO) --- */
         @media (max-width: 800px) {
-            .dashboard-container {
-                padding: 12px; /* Reduz o espaçamento geral */
-            }
-            header h1 {
-                font-size: 1.5rem; /* Reduz o título principal */
-            }
-            .main-nav a {
-                padding: 10px 8px;
-                font-size: 0.9rem;
-            }
-            .kpi-card {
-                padding: 12px;
-                gap: 12px;
-            }
-            .kpi-card .text h3 {
-                font-size: 1.5rem; /* Reduz o número do KPI */
-            }
-            .kpi-card .text p {
-                font-size: 0.9rem;
-            }
-            .main-content {
-                grid-template-columns: 1fr; /* Força uma única coluna */
-            }
-            #mapa {
-                min-height: 400px; /* Altura menor para o mapa em telas pequenas */
-                height: 50vh;
-            }
-            .card {
-                padding: 16px;
-            }
-            .card-header {
-                flex-direction: column; /* Empilha o título e o botão de "Adicionar Rota" */
-                align-items: flex-start;
-                gap: 16px;
-            }
-            .route-table {
-                overflow-x: auto; /* Adiciona scroll horizontal na tabela se necessário */
-            }
+            .dashboard-container { padding: 12px; }
+            header h1 { font-size: 1.5rem; }
+            .main-content { grid-template-columns: 1fr; }
+            #mapa { min-height: 400px; height: 50vh; }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <header>
-            <h1>Painel de Gerenciamento</h1>
-        </header>
-
+        <header><h1>Painel de Gerenciamento</h1></header>
         <nav class="main-nav">
             <a class="nav-link active" data-tab="dashboard">Dashboard</a>
             <a class="nav-link" data-tab="routes">Gerenciar Rotas</a>
@@ -120,17 +71,12 @@
                  <div class="kpi-card"><div class="icon" style="background-color: var(--text-light);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM169.8 165.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></div><div class="text"><h3>1</h3><p>Sem Rota Definida</p></div></div>
             </div>
             <div class="main-content">
-                <div class="card">
-                    <h2 style="border: none; padding-bottom: 0; margin-bottom: 16px;">Localização da Frota em Tempo Real</h2>
-                    <div id="mapa"></div>
-                </div>
+                <div class="card"><div id="mapa"></div></div>
                 <div class="card vehicle-list">
                     <h2>Veículos Ativos</h2>
                     <ul>
                         <li><div class="vehicle-info"><strong>Veículo 1</strong><span>Destino: AZ2</span></div><div class="status green"><div class="status-dot"></div><span>A caminho</span></div></li>
                         <li><div class="vehicle-info"><strong>Veículo 2</strong><span>Destino: AZ7</span></div><div class="status yellow"><div class="status-dot"></div><span>Parado</span></div></li>
-                        <li><div class="vehicle-info"><strong>Veículo 3</strong><span>Destino: --</span></div><div class="status gray"><div class="status-dot"></div><span>Sem rota</span></div></li>
-                        <li><div class="vehicle-info"><strong>Veículo 4</strong><span>Destino: AZ1</span></div><div class="status green"><div class="status-dot"></div><span>A caminho</span></div></li>
                     </ul>
                 </div>
             </div>
@@ -144,31 +90,9 @@
                 </div>
                 <div class="route-table">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Nome da Rota</th>
-                                <th>Nº de Pontos</th>
-                                <th style="text-align: right;">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Rota para AZ1</td>
-                                <td>25</td>
-                                <td class="route-actions" style="text-align: right;">
-                                    <button title="Editar"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512"><path fill="#333" d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.8-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/></svg></button>
-                                    <button title="Excluir"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512"><path fill="#333" d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Rota para AZ2</td>
-                                <td>14</td>
-                                <td class="route-actions" style="text-align: right;">
-                                    <button title="Editar"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512"><path fill="#333" d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.8-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/></svg></button>
-                                    <button title="Excluir"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512"><path fill="#333" d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg></button>
-                                </td>
-                            </tr>
-                        </tbody>
+                        <thead><tr><th>Nome da Rota</th><th>Nº de Pontos</th><th style="text-align: right;">Ações</th></tr></thead>
+                        <tbody id="route-table-body">
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -177,40 +101,46 @@
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // --- INICIALIZAÇÃO DO MAPA ---
         const mapa = L.map('mapa').setView([-26.9535, -48.7500], 17);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapa);
         
-        // Simulação de caminhões e docas no mapa
         const truckIcon = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61922.png', iconSize: [32, 32], iconAnchor: [16, 16] });
         const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [38, 38], iconAnchor: [19, 38]});
         
-        [
-            { id: "Veículo 1", position: [-26.9525, -48.7508], popup: "<b>Veículo 1</b><br>Status: A caminho" },
-            { id: "Veículo 2", position: [-26.9555, -48.7499], popup: "<b>Veículo 2</b><br>Status: Parado" },
-            { id: "Veículo 3", position: [-26.9518, -48.7499], popup: "<b>Veículo 3</b><br>Status: Sem rota" }
-        ].forEach(truck => L.marker(truck.position, { icon: truckIcon }).addTo(mapa).bindPopup(truck.popup));
-        
-        [
-            { name: "AZ1", coords: L.latLng(-26.9535299, -48.7505575) }, { name: "AZ2", coords: L.latLng(-26.9562354, -48.7495152) },
-            { name: "AZ4", coords: L.latLng(-26.9514142, -48.7501463) }
-        ].forEach(doca => L.marker(doca.coords, { icon: docaIcon, title: doca.name}).addTo(mapa).bindPopup(`<b>${doca.name}</b>`));
+        // Simulação de caminhões e docas
+        [ { position: [-26.9525, -48.7508], popup: "<b>Veículo 1</b><br>Status: A caminho" }, { position: [-26.9555, -48.7499], popup: "<b>Veículo 2</b><br>Status: Parado" } ].forEach(truck => L.marker(truck.position, { icon: truckIcon }).addTo(mapa).bindPopup(truck.popup));
+        [ { name: "AZ1", coords: L.latLng(-26.9535299, -48.7505575) }, { name: "AZ2", coords: L.latLng(-26.9562354, -48.7495152) } ].forEach(doca => L.marker(doca.coords, { icon: docaIcon }).addTo(mapa).bindPopup(`<b>${doca.name}</b>`));
 
-        // --- LÓGICA PARA CONTROLE DAS ABAS ---
+        // --- LÓGICA DAS ABAS E CARREGAMENTO DE ROTAS ---
         document.addEventListener('DOMContentLoaded', () => {
-            const navLinks = document.querySelectorAll('.nav-link');
-            const tabContents = document.querySelectorAll('.tab-content');
+            fetch('rotas.geojson')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('route-table-body');
+                    data.features.forEach(route => {
+                        const row = `
+                            <tr>
+                                <td>${route.properties.name}</td>
+                                <td>${route.geometry.coordinates.length}</td>
+                                <td class="route-actions" style="text-align: right;">
+                                    <button title="Editar">✏️</button>
+                                    <button title="Excluir">🗑️</button>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                });
 
+            const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
-                link.addEventListener('click', (event) => {
-                    event.preventDefault();
+                link.addEventListener('click', () => {
                     navLinks.forEach(nav => nav.classList.remove('active'));
                     link.classList.add('active');
                     const targetTab = link.getAttribute('data-tab');
-                    tabContents.forEach(content => content.classList.add('hidden'));
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
                     document.getElementById(targetTab).classList.remove('hidden');
                     if (targetTab === 'dashboard') {
-                        // Atrasar a invalidação para garantir que a div está visível
                         setTimeout(() => mapa.invalidateSize(), 10);
                     }
                 });

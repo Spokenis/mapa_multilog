@@ -8,87 +8,135 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css" />
 
     <style>
-        /* Seu CSS continua o mesmo */
         :root { --multilog-navy: #00113D; --multilog-cyan: #00A99D; --white: #FFFFFF; --light-gray: #f0f2f5; --text-dark: #333; --border-gray: #e0e0e0; }
         body { margin: 0; font-family: 'DM Sans', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--light-gray); }
-        .container { width: 95%; max-width: 1400px; height: 90vh; display: flex; flex-direction: column; border: 1px solid var(--border-gray); box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 8px; overflow: hidden; background-color: var(--white); }
-        .search-bar { padding: 12px 20px; background-color: var(--white); border-bottom: 1px solid var(--border-gray); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-        .logo-container { display: flex; align-items: center; }
-        .logo-svg { height: 30px; width: auto; fill: var(--multilog-navy); }
+        .container { width: 100%; max-width: 1400px; height: 100vh; display: flex; flex-direction: column; border: 1px solid var(--border-gray); box-shadow: 0 4px 12px rgba(0,0,0,0.08); background-color: var(--white); }
+        .search-bar { padding: 12px 20px; border-bottom: 1px solid var(--border-gray); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
         .search-controls { display: flex; flex-grow: 1; min-width: 280px; }
-        #search-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px 0 0 6px; font-size: 1rem; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s ease, box-shadow 0.2s ease; border-right: none; }
-        #search-input:focus { outline: none; border-color: var(--multilog-cyan); box-shadow: 0 0 0 2px rgba(0, 169, 157, 0.2); z-index: 2; }
-        #search-button { padding: 10px 22px; border: 1px solid var(--multilog-cyan); background-color: var(--multilog-cyan); color: var(--white); font-weight: 500; font-size: 1rem; border-radius: 0 6px 6px 0; cursor: pointer; transition: background-color 0.2s ease; }
-        #search-button:hover { background-color: #008a7f; }
-        .map-header { padding: 8px 20px; text-align: center; background-color: #fafafa; display: flex; justify-content: space-between; align-items: center; }
-        .map-header h1 { margin: 0; font-size: 1.25rem; font-weight: 500; color: var(--text-dark); flex-grow: 1; text-align: center; }
-        #print-button { padding: 6px 12px; background-color: transparent; border: 1px solid var(--border-gray); color: var(--text-dark); border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: background-color 0.2s ease, border-color 0.2s ease; }
-        #print-button:hover { background-color: #f0f0f0; border-color: #ccc; }
-        #print-button svg { width: 16px; height: 16px; fill: currentColor; }
-        #mapa { flex-grow: 1; height: 100%; border-top: 1px solid var(--border-gray); }
+        #search-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px 0 0 6px; font-size: 1rem; border-right: none; }
+        #search-input:focus { outline: none; border-color: var(--multilog-cyan); }
+        #search-button { padding: 10px 22px; border: 1px solid var(--multilog-cyan); background-color: var(--multilog-cyan); color: var(--white); font-weight: 500; font-size: 1rem; border-radius: 0 6px 6px 0; cursor: pointer; }
+        #mapa { flex-grow: 1; height: 100%; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="search-bar"><div class="logo-container"><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 532.7 151" class="logo-svg" xml:space="preserve"><polygon fill="currentColor" points="363,126.7 394.3,126.7 394.3,139.4 348.6,139.4 348.6,63.3 363,63.3 "/><path fill="currentColor" d="M457.8,117.1c0,12.7-7.3,23.4-28.8,23.4c-21.5,0-28.8-10.7-28.8-23.4V85.6c0-12.7,7.3-23.4,28.8-23.4  c21.5,0,28.8,10.7,28.8,23.4V117.1z M414.6,116.3c0,7.2,3.7,11.5,14.4,11.5c10.7,0,14.4-4.3,14.4-11.5V86.4 c0-7.2-3.7-11.5-14.4-11.5c-10.7,0-14.4,4.3-14.4,11.5V116.3z"/><path fill="currentColor" d="M479.7,115.9c0,7.4,3.2,11.8,13.3,11.8c3.9,0,7.9-0.3,11.8-0.9v-23.1h13.6v33.5c-8,2.3-17.5,3.4-25.5,3.4  c-18.6,0-27.5-7.9-27.5-23V85.1c0-15.7,9.1-23,28.9-23c6.2,0,15,0.7,21.8,2.5l-1.6,12.6c-7-1.5-13.9-2.1-21.4-2.1    c-10.1,0-13.4,4.1-13.4,11.9V115.9z"/><rect x="286.3" y="118.7" fill="currentColor" width="48.4" height="20.8"/><rect x="286.3" y="91" fill="currentColor" width="48.4" height="20.8"/><rect x="286.3" y="63.3" fill="currentColor" width="48.4" height="20.8"/><rect x="286.3" y="35.6" fill="currentColor" width="48.4" height="20.8"/><rect x="286.3" y="7.9" fill="currentColor" width="48.4" height="20.8"/><polygon fill="currentColor" points="62.8,129.6 44.5,129.6 30.4,90.1 29.2,139.4 14.4,139.4 17.9,63.3 34,63.3 53.6,117.3 73.3,63.3    89.4,63.3 92.8,139.4 78.1,139.4 76.8,90.1 "/><path fill="currentColor" d="M155.4,63.3v54.1c0,12-6.7,23.2-28.1,23.2c-21.4,0-28.1-11.2-28.1-23.2V63.3h14.4v52.9    c0,7.4,3.5,11.7,13.7,11.7c10.2,0,13.7-4.2,13.7-11.7V63.3H155.4z"/><polygon fill="currentColor" points="176.9,126.7 208.2,126.7 208.2,139.4 162.4,139.4 162.4,63.3 176.9,63.3 "/><polygon fill="currentColor" points="215.1,76 193.9,76 193.9,63.3 250.8,63.3 250.8,76 229.5,76 229.5,139.4 215.1,139.4 "/><rect x="258" y="63.3" fill="currentColor" width="14.4" height="76.1"/></svg></div><div class="search-controls"><input type="text" id="search-input" placeholder="Pesquisar por 'AZ1', 'Polo Saúde', etc."><button id="search-button">Pesquisar</button></div></div><div class="map-header"><h1>Itajaí</h1><button id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H352v96h64V64c0-35.3-28.7-64-64-64H128zM64 352h32c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32H64c-17.7 0-32-14.3-32-32V384c0-17.7 14.3-32 32-32zm384-32c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32h-32c-17.7 0-32-14.3-32-32V384c0-17.7 14.3-32 32-32h32zM384 160H128V128H64v32c0 17.7 14.3 32 32 32h320c17.7 0 32-14.3 32-32V128h-64v32zM160 256c-17.7 0-32 14.3-32 32v64c0 17.7 14.3 32 32 32h192c17.7 0 32-14.3 32-32V288c0-17.7-14.3-32-32-32H160z"/></svg><span>Imprimir</span></button></div>
+        <div class="search-bar">
+            <div class="search-controls">
+                <input type="text" id="search-input" placeholder="Pesquisar por 'AZ1', 'Polo Saúde', etc.">
+                <button id="search-button">Pesquisar</button>
+            </div>
+        </div>
         <div id="mapa"></div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
 
     <script>
-        // ... (código inicial do mapa, layers, bounds, etc, continua o mesmo) ...
-        const ruas = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' });
-        const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Tiles &copy; Esri' });
-        const bounds = L.latLngBounds([[-26.958, -48.752], [-26.950, -48.748]]);
-        const mapa = L.map('mapa', { center: [-26.9535, -48.7500], zoom: 17, layers: [ruas], maxBounds: bounds, minZoom: 16 });
-        const baseMaps = { "Ruas": ruas, "Satélite": satelite };
-        L.control.layers(baseMaps).addTo(mapa);
-        
-        // --- CÓDIGO DE LOCALIZAÇÃO ATUALIZADO ---
+        const mapa = L.map('mapa').setView([-26.9535, -48.7500], 17);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapa);
 
-        // 1. Configurações do controle de localização
-        const locateOptions = {
-            flyTo: true,
-            showCompass: false, // <-- ADICIONADO: Desativa a bússola para evitar o aviso
-            strings: {
-                title: "Mostrar minha localização",
-                popup: "Você está aqui!",
-                outsideMapBoundsMsg: "Você parece estar fora dos limites do mapa."
-            }
-        };
+        // --- VARIÁVEIS GLOBAIS ---
+        let todasAsRotasGeoJSON = null;
+        let camadaRotaAtual = null;
+        const docas = []; // Será populado dinamicamente
 
-        const locateControl = L.control.locate(locateOptions).addTo(mapa);
-        locateControl.start();
-
-        mapa.on('locationerror', function(e) {
-            alert("Erro ao obter a localização. Certifique-se de que:\n\n1. Você permitiu o acesso à localização no seu navegador.\n2. O serviço de localização do seu dispositivo está ativado.\n3. A página está sendo executada a partir de um servidor (ex: http://localhost) e não de um arquivo local (file:///).");
-            console.error(e.message);
-        });
-        
-        // ... (resto do seu código, ícones, rotas, etc, continua o mesmo) ...
-        const guaritaIcon = L.icon({ iconUrl: 'guarita.png', iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -40] });
-        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -40] });
+        // --- ÍCONES ---
+        const guaritaIcon = L.icon({ iconUrl: 'guarita.png', iconSize: [38, 38], iconAnchor: [19, 38] });
+        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [38, 38], iconAnchor: [19, 38] });
         const startPoint = L.latLng(-26.951650, -48.750924);
-        L.marker(startPoint, { icon: guaritaIcon, title: 'Ponto de Partida (Guarita)' }).addTo(mapa);
-        const docas = [{ name: "AZ1", coords: L.latLng(-26.9535299, -48.7505575) }, { name: "AZ2", coords: L.latLng(-26.9562354, -48.7495152) }, { name: "AZ4", coords: L.latLng(-26.9514142, -48.7501463) }, { name: "AZ5", coords: L.latLng(-26.9506359, -48.7494263) }, { name: "AZ6", coords: L.latLng(-26.9514888, -48.7492023) }, { name: "AZ7", coords: L.latLng(-26.954492, -48.7516937) }, { name: "Polo Saúde", coords: L.latLng(-26.9554991, -48.7495528) }];
-        const rotasInternas = { "AZ1": [[-26.951602, -48.750817], [-26.951797, -48.750814], [-26.951948, -48.750818], [-26.952118, -48.750849], [-26.952266, -48.75089], [-26.952356, -48.750971], [-26.952421, -48.75107], [-26.952446, -48.751194], [-26.952475, -48.751321], [-26.952482, -48.751441], [-26.952515, -48.751641], [-26.952558, -48.751828], [-26.952641, -48.751985], [-26.952787, -48.752111], [-26.952969, -48.752182], [-26.953131, -48.75217], [-26.953263, -48.752118], [-26.9533578, -48.7520368], [-26.9533487, -48.7518984], [-26.9529838, -48.751282], [-26.9529287, -48.751185], [-26.9529107, -48.751095], [-26.9529453, -48.7510263], [-26.9530625, -48.7509196], [-26.9532335, -48.7507739]], "AZ2": [[-26.951604, -48.750814], [-26.95192, -48.750813], [-26.952142, -48.750756], [-26.952391, -48.750514], [-26.952578, -48.750307], [-26.953017, -48.74994], [-26.953507, -48.74953], [-26.953733, -48.749346], [-26.95409, -48.749112], [-26.954588, -48.749018], [-26.95501, -48.749055], [-26.955422, -48.74909], [-26.95576, -48.749213], [-26.955866, -48.749388]], "AZ4": [[-26.951605, -48.750813], [-26.951934, -48.750816], [-26.952046, -48.750712], [-26.952056, -48.75058], [-26.951831, -48.750178], [-26.951728, -48.750105], [-26.951601, -48.750098], [-26.951444, -48.750157]], "AZ5": [[-26.951597, -48.750827], [-26.951933, -48.750822], [-26.952048, -48.750705], [-26.952055, -48.750573], [-26.951729, -48.750023], [-26.951712, -48.749938], [-26.952469, -48.749293], [-26.952469, -48.749209], [-26.952401, -48.749106], [-26.95215, -48.748974], [-26.951775, -48.748923], [-26.951643, -48.748937], [-26.9515038, -48.749024], [-26.9511715, -48.7491554], [-26.9510711, -48.7492091], [-26.9508033, -48.7492788]], "AZ6": [[-26.951602, -48.750816], [-26.951933, -48.750822], [-26.952048, -48.750705], [-26.952055, -48.750573], [-26.9519, -48.750289], [-26.951729, -48.750023], [-26.951712, -48.749938], [-26.952469, -48.749293], [-26.952469, -48.749209], [-26.952401, -48.749106], [-26.95215, -48.748974], [-26.951912, -48.748944], [-26.951775, -48.748923], [-26.951643, -48.748937], [-26.9515376, -48.7490216]], "AZ7": [[-26.951597, -48.750827], [-26.951948, -48.750818], [-26.952266, -48.75089], [-26.952356, -48.750971], [-26.952421, -48.75107], [-26.952475, -48.751321], [-26.952482, -48.751441], [-26.952558, -48.751828], [-26.952641, -48.751985], [-26.952787, -48.752111], [-26.952969, -48.752182], [-26.953131, -48.75217], [-26.953263, -48.752118], [-26.9533578, -48.7520368], [-26.9535213, -48.7521122], [-26.9536934, -48.7521122], [-26.9543342, -48.7518171]], "Polo Saúde": [[-26.951604, -48.750814], [-26.95192, -48.750813], [-26.952142, -48.750756], [-26.952391, -48.750514], [-26.952578, -48.750307], [-26.953017, -48.74994], [-26.953507, -48.74953], [-26.953733, -48.749346], [-26.95409, -48.749112], [-26.954588, -48.749018], [-26.95501, -48.749055], [-26.955422, -48.74909], [-26.95576, -48.749213]] };
-        let rotaAtual = null;
-        function desenharRota(nomeDoca) { if (rotaAtual) { mapa.removeLayer(rotaAtual); } let coordenadasRota = rotasInternas[nomeDoca]; if (coordenadasRota) { const docaInfo = docas.find(d => d.name === nomeDoca); const rotaCompleta = [[startPoint.lat, startPoint.lng], ...coordenadasRota, [docaInfo.coords.lat, docaInfo.coords.lng]]; rotaAtual = L.polyline(rotaCompleta, { color: '#00113D', weight: 5, opacity: 0.7 }).addTo(mapa); mapa.fitBounds(rotaAtual.getBounds().pad(0.1)); } else { alert(`As coordenadas para a rota até ${nomeDoca} ainda não foram definidas.`); } }
-        docas.forEach(doca => { const marker = L.marker(doca.coords, { icon: docaIcon, title: doca.name }).addTo(mapa); marker.bindPopup(`<b>${doca.name}</b>`); marker.on('click', () => { desenharRota(doca.name); }); });
+        L.marker(startPoint, { icon: guaritaIcon, title: 'Guarita' }).addTo(mapa);
+        
+        // Adicionar marcadores de docas
+        const pontosDeInteresse = [
+            { name: "AZ1", coords: L.latLng(-26.9535299, -48.7505575) },
+            { name: "AZ2", coords: L.latLng(-26.9562354, -48.7495152) },
+            { name: "AZ4", coords: L.latLng(-26.9514142, -48.7501463) },
+            { name: "AZ5", coords: L.latLng(-26.9506359, -48.7494263) },
+            { name: "AZ6", coords: L.latLng(-26.9514888, -48.7492023) },
+            { name: "AZ7", coords: L.latLng(-26.954492, -48.7516937)   },
+            { name: "Polo Saúde", coords: L.latLng(-26.9554991, -48.7495528) }
+        ];
+
+        pontosDeInteresse.forEach(ponto => {
+            docas.push(ponto); // Popula o array de docas para a busca
+            const marker = L.marker(ponto.coords, { icon: docaIcon, title: ponto.name }).addTo(mapa);
+            marker.bindPopup(`<b>${ponto.name}</b>`);
+            marker.on('click', () => desenharRota(ponto.name));
+        });
+
+        // --- LÓGICA DE ROTAS ---
+        fetch('rotas.geojson')
+            .then(response => response.json())
+            .then(data => {
+                todasAsRotasGeoJSON = data;
+                console.log("Arquivo de rotas carregado.");
+            })
+            .catch(error => console.error('Erro ao carregar rotas.geojson:', error));
+
+        function desenharRota(nomeDaRota) {
+            if (!todasAsRotasGeoJSON) {
+                alert("Aguarde, as rotas estão sendo carregadas.");
+                return;
+            }
+            if (camadaRotaAtual) {
+                mapa.removeLayer(camadaRotaAtual);
+            }
+
+            const rotaFeature = todasAsRotasGeoJSON.features.find(f => f.properties.name.toUpperCase() === nomeDaRota.toUpperCase());
+            const pontoFinalInfo = pontosDeInteresse.find(p => p.name.toUpperCase() === nomeDaRota.toUpperCase());
+            
+            if (rotaFeature && pontoFinalInfo) {
+                const rotaCompleta = {
+                    type: "Feature",
+                    geometry: {
+                        type: "LineString",
+                        coordinates: [
+                            [startPoint.lng, startPoint.lat], // Ponto inicial (Guarita)
+                            ...rotaFeature.geometry.coordinates,
+                            [pontoFinalInfo.coords.lng, pontoFinalInfo.coords.lat] // Ponto final (Doca)
+                        ]
+                    }
+                };
+
+                camadaRotaAtual = L.geoJSON(rotaCompreta, {
+                    style: { color: '#00113D', weight: 5, opacity: 0.7 }
+                }).addTo(mapa);
+                mapa.fitBounds(camadaRotaAtual.getBounds().pad(0.1));
+            } else {
+                alert(`Rota não encontrada: ${nomeDaRota}`);
+            }
+        }
+        
+        // --- GEOLOCALIZAÇÃO ---
+        const locateControl = L.control.locate({
+            flyTo: true,
+            showCompass: false,
+            strings: { title: "Mostrar minha localização" }
+        }).addTo(mapa);
+        locateControl.start();
+        
+        // --- BUSCA ---
         const searchInput = document.getElementById('search-input');
         const searchButton = document.getElementById('search-button');
-        function performSearch() { const query = searchInput.value.trim().toUpperCase(); if (!query) return; const result = docas.find(doca => doca.name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === query.normalize("NFD").replace(/[\u0300-\u036f]/g, "")); if (result) { desenharRota(result.name); } else { alert(`Local não encontrado! Por favor, pesquise por um dos locais válidos (ex: "AZ1", "AZ5", "Polo Saúde", etc.).`); } }
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+            const result = docas.find(doca => doca.name.toUpperCase() === query.toUpperCase());
+            if (result) {
+                desenharRota(result.name);
+            } else {
+                alert(`Doca não encontrada!`);
+            }
+        }
         searchButton.addEventListener('click', performSearch);
-        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { searchButton.click(); } });
-        const printButton = document.getElementById('print-button');
-        printButton.addEventListener('click', () => { window.print(); });
+        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
     </script>
 </body>
 </html>
