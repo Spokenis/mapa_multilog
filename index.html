@@ -4,31 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de Rotas | Multilog Itajaí</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css" />
-
     <style>
-        :root { --multilog-navy: #00113D; --multilog-cyan: #00A99D; --white: #FFFFFF; --light-gray: #f0f2f5; --text-dark: #333; --border-gray: #e0e0e0; }
+        :root { --multilog-navy: #00113D; --multilog-cyan: #00A99D; --white: #FFFFFF; --light-gray: #f0f2f5; }
         body { margin: 0; font-family: 'DM Sans', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--light-gray); }
-        .container { width: 100%; max-width: 1400px; height: 100vh; display: flex; flex-direction: column; border: 1px solid var(--border-gray); box-shadow: 0 4px 12px rgba(0,0,0,0.08); background-color: var(--white); }
-        .search-bar { padding: 12px 20px; border-bottom: 1px solid var(--border-gray); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-        .search-controls { display: flex; flex-grow: 1; min-width: 280px; }
-        #search-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px 0 0 6px; font-size: 1rem; border-right: none; }
-        #search-input:focus { outline: none; border-color: var(--multilog-cyan); }
-        #search-button { padding: 10px 22px; border: 1px solid var(--multilog-cyan); background-color: var(--multilog-cyan); color: var(--white); font-weight: 500; font-size: 1rem; border-radius: 0 6px 6px 0; cursor: pointer; }
-        #mapa { flex-grow: 1; height: 100%; }
+        .container { width: 95%; max-width: 1400px; height: 90vh; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; background-color: var(--white); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .search-bar { padding: 12px 20px; border-bottom: 1px solid #e0e0e0; display: flex; gap: 15px; align-items: center; }
+        .search-controls { display: flex; flex-grow: 1; }
+        #search-input { flex-grow: 1; padding: 10px 15px; border: 1px solid #e0e0e0; border-radius: 6px 0 0 6px; font-size: 1rem; border-right: none; }
+        #search-button { padding: 10px 22px; border: 1px solid var(--multilog-cyan); background-color: var(--multilog-cyan); color: var(--white); font-weight: 500; border-radius: 0 6px 6px 0; cursor: pointer; }
+        #mapa { flex-grow: 1; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="search-bar">
             <div class="search-controls">
-                <input type="text" id="search-input" placeholder="Pesquisar por 'AZ1', 'Polo Saúde', etc.">
+                <input type="text" id="search-input" placeholder="Pesquisar por 'AZ1 DC1', 'ENTRADA', etc.">
                 <button id="search-button">Pesquisar</button>
             </div>
         </div>
@@ -39,104 +35,77 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
 
     <script>
-        const mapa = L.map('mapa').setView([-26.9535, -48.7500], 17);
+        const bounds = L.latLngBounds([[-26.958, -48.752], [-26.950, -48.748]]);
+        const mapa = L.map('mapa', { center: [-26.9535, -48.7500], zoom: 17, maxBounds: bounds, minZoom: 16 });
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapa);
 
-        // --- VARIÁVEIS GLOBAIS ---
-        let todasAsRotasGeoJSON = null;
+        let todasAsRotas = [];
+        let todosOsPontos = [];
         let camadaRotaAtual = null;
-        const docas = []; // Será populado dinamicamente
 
-        // --- ÍCONES ---
         const guaritaIcon = L.icon({ iconUrl: 'guarita.png', iconSize: [38, 38], iconAnchor: [19, 38] });
-        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [38, 38], iconAnchor: [19, 38] });
+        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [32, 32], iconAnchor: [16, 32] });
         const startPoint = L.latLng(-26.951650, -48.750924);
         L.marker(startPoint, { icon: guaritaIcon, title: 'Guarita' }).addTo(mapa);
-        
-        // Adicionar marcadores de docas
-        const pontosDeInteresse = [
-            { name: "AZ1", coords: L.latLng(-26.9535299, -48.7505575) },
-            { name: "AZ2", coords: L.latLng(-26.9562354, -48.7495152) },
-            { name: "AZ4", coords: L.latLng(-26.9514142, -48.7501463) },
-            { name: "AZ5", coords: L.latLng(-26.9506359, -48.7494263) },
-            { name: "AZ6", coords: L.latLng(-26.9514888, -48.7492023) },
-            { name: "AZ7", coords: L.latLng(-26.954492, -48.7516937)   },
-            { name: "Polo Saúde", coords: L.latLng(-26.9554991, -48.7495528) }
-        ];
 
-        pontosDeInteresse.forEach(ponto => {
-            docas.push(ponto); // Popula o array de docas para a busca
-            const marker = L.marker(ponto.coords, { icon: docaIcon, title: ponto.name }).addTo(mapa);
-            marker.bindPopup(`<b>${ponto.name}</b>`);
-            marker.on('click', () => desenharRota(ponto.name));
-        });
-
-        // --- LÓGICA DE ROTAS ---
         fetch('rotas.geojson')
             .then(response => response.json())
             .then(data => {
-                todasAsRotasGeoJSON = data;
-                console.log("Arquivo de rotas carregado.");
-            })
-            .catch(error => console.error('Erro ao carregar rotas.geojson:', error));
-
-        function desenharRota(nomeDaRota) {
-            if (!todasAsRotasGeoJSON) {
-                alert("Aguarde, as rotas estão sendo carregadas.");
-                return;
-            }
-            if (camadaRotaAtual) {
-                mapa.removeLayer(camadaRotaAtual);
-            }
-
-            const rotaFeature = todasAsRotasGeoJSON.features.find(f => f.properties.name.toUpperCase() === nomeDaRota.toUpperCase());
-            const pontoFinalInfo = pontosDeInteresse.find(p => p.name.toUpperCase() === nomeDaRota.toUpperCase());
-            
-            if (rotaFeature && pontoFinalInfo) {
-                const rotaCompleta = {
-                    type: "Feature",
-                    geometry: {
-                        type: "LineString",
-                        coordinates: [
-                            [startPoint.lng, startPoint.lat], // Ponto inicial (Guarita)
-                            ...rotaFeature.geometry.coordinates,
-                            [pontoFinalInfo.coords.lng, pontoFinalInfo.coords.lat] // Ponto final (Doca)
-                        ]
+                // Separa os dados em rotas e pontos
+                todasAsRotas = data.features.filter(f => f.properties.type === 'route');
+                todosOsPontos = data.features.filter(f => f.properties.type === 'point');
+                console.log(`Carregado: ${todasAsRotas.length} rotas e ${todosOsPontos.length} pontos.`);
+                
+                // Adiciona os pontos ao mapa
+                L.geoJSON(todosOsPontos, {
+                    pointToLayer: (feature, latlng) => L.marker(latlng, { icon: docaIcon, title: feature.properties.name }),
+                    onEachFeature: (feature, layer) => {
+                        layer.bindPopup(`<b>${feature.properties.name}</b>`);
+                        // Ao clicar em um ponto, desenha a rota para a ZONA correspondente
+                        if(feature.properties.zone){
+                             layer.on('click', () => desenharRota(feature.properties.zone));
+                        }
                     }
-                };
+                }).addTo(mapa);
+            })
+            .catch(error => console.error("Erro ao carregar rotas.geojson:", error));
 
-                camadaRotaAtual = L.geoJSON(rotaCompleta, {
+        function desenharRota(nomeDaZona) {
+            if (camadaRotaAtual) mapa.removeLayer(camadaRotaAtual);
+
+            const rotaFeature = todasAsRotas.find(f => f.properties.name.toUpperCase() === nomeDaZona.toUpperCase());
+            
+            if (rotaFeature) {
+                const rotaComGuarita = JSON.parse(JSON.stringify(rotaFeature));
+                rotaComGuarita.geometry.coordinates.unshift([startPoint.lng, startPoint.lat]);
+                
+                camadaRotaAtual = L.geoJSON(rotaComGuarita, {
                     style: { color: '#00113D', weight: 5, opacity: 0.7 }
                 }).addTo(mapa);
                 mapa.fitBounds(camadaRotaAtual.getBounds().pad(0.1));
             } else {
-                alert(`Rota não encontrada: ${nomeDaRota}`);
+                alert(`Não há uma rota principal definida para a zona: ${nomeDaZona}.`);
             }
         }
         
-        // --- GEOLOCALIZAÇÃO ---
-        const locateControl = L.control.locate({
-            flyTo: true,
-            showCompass: false,
-            strings: { title: "Mostrar minha localização" }
-        }).addTo(mapa);
-        locateControl.start();
+        L.control.locate({ flyTo: true, showCompass: false, strings: { title: "Mostrar minha localização" } }).addTo(mapa).start();
         
-        // --- BUSCA ---
-        const searchInput = document.getElementById('search-input');
-        const searchButton = document.getElementById('search-button');
         function performSearch() {
-            const query = searchInput.value.trim();
+            if (!todosOsPontos.length) return;
+            const query = document.getElementById('search-input').value.trim().toUpperCase();
             if (!query) return;
-            const result = docas.find(doca => doca.name.toUpperCase() === query.toUpperCase());
-            if (result) {
-                desenharRota(result.name);
+            
+            const result = todosOsPontos.find(p => p.properties.name.toUpperCase() === query);
+            
+            if (result && result.properties.zone) {
+                desenharRota(result.properties.zone);
             } else {
-                alert(`Doca não encontrada!`);
+                alert(`Ponto não encontrado: "${query}"`);
             }
         }
-        searchButton.addEventListener('click', performSearch);
-        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+
+        document.getElementById('search-button').addEventListener('click', performSearch);
+        document.getElementById('search-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
     </script>
 </body>
 </html>
