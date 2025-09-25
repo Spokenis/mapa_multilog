@@ -106,19 +106,47 @@
         </div>
     </div>
     
-    <div id="add-modal" class="modal-overlay"></div>
+    <div id="add-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Adicionar Novo Item</h2>
+                <button id="modal-close-btn" class="modal-close">&times;</button>
+            </div>
+            <form id="modal-form">
+                <div class="form-group">
+                    <label>Tipo de Item</label>
+                    <div>
+                        <input type="radio" id="type-point" name="item-type" value="point" checked> <label for="type-point">Ponto</label>
+                        <input type="radio" id="type-route" name="item-type" value="route" style="margin-left: 16px;"> <label for="type-route">Rota</label>
+                    </div>
+                </div>
+                <div id="form-point-section" class="form-section">
+                    <div class="form-group"><label for="point-name">Nome (Ex: AZ1 DC11)</label><input type="text" id="point-name" required></div>
+                    <div class="form-group"><label for="point-zone">Zona (Ex: AZ1)</label><input type="text" id="point-zone" required></div>
+                    <div class="form-group"><label for="point-coords">Coordenadas (Longitude, Latitude)</label><input type="text" id="point-coords" placeholder="-48.12345, -26.12345" required></div>
+                </div>
+                <div id="form-route-section" class="form-section hidden">
+                    <div class="form-group"><label for="route-name">Nome da Rota (Ex: AZ1)</label><input type="text" id="route-name" required></div>
+                    <div class="form-group"><label for="route-coords">Coordenadas da Rota</label><textarea id="route-coords" placeholder="Cole a lista de coordenadas [lng, lat], uma por linha. Ex:&#10;[-48.123, -26.123],&#10;[-48.456, -26.456]," required></textarea></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modal-cancel-btn" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // --- INICIALIZAÇÃO DO MAPA E VARIÁVEIS ---
         const ruas = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 });
         const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 });
         const mapa = L.map('mapa', { center: [-26.9535, -48.7500], zoom: 17, layers: [ruas] });
         L.control.layers({ "Ruas": ruas, "Satélite": satelite }).addTo(mapa);
+        
         const truckIcon = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61922.png', iconSize: [32, 32], iconAnchor: [16, 16] });
         const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [32, 32], iconAnchor: [16, 32]});
         
-        // Simulação de caminhões
         [ { pos: [-26.9525, -48.7508], popup: "<b>Veículo 1</b>" }, { pos: [-26.9555, -48.7499], popup: "<b>Veículo 2</b>" } ].forEach(t => L.marker(t.pos, { icon: truckIcon }).addTo(mapa).bindPopup(t.popup));
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -131,15 +159,14 @@
                     const rotas = data.features.filter(f => f.properties.type === 'route');
                     const pontos = data.features.filter(f => f.properties.type === 'point');
                     
-                    // Popula as tabelas
                     pontos.forEach(p => {
                         const row = document.createElement('tr');
-                        row.innerHTML = `<td>${p.properties.name}</td><td>${p.properties.zone || '--'}</td><td>${p.properties.dock || '--'}</td><td class="actions" style="text-align: right;"><button class="delete-btn" data-type="Ponto" data-name="${p.properties.name}">🗑️</button></td>`;
+                        row.innerHTML = `<td>${p.properties.name}</td><td>${p.properties.zone || '--'}</td><td>${p.properties.dock || '--'}</td><td class="actions" style="text-align: right;"><button class="delete-btn" data-type="Ponto" data-name="${p.properties.name}" title="Apagar">🗑️</button></td>`;
                         pointsTableBody.appendChild(row);
                     });
                     rotas.forEach(r => {
                         const row = document.createElement('tr');
-                        row.innerHTML = `<td>${r.properties.name}</td><td>${r.geometry.coordinates.length}</td><td class="actions" style="text-align: right;"><button class="delete-btn" data-type="Rota" data-name="${r.properties.name}">🗑️</button></td>`;
+                        row.innerHTML = `<td>${r.properties.name}</td><td>${r.geometry.coordinates.length}</td><td class="actions" style="text-align: right;"><button class="delete-btn" data-type="Rota" data-name="${r.properties.name}" title="Apagar">🗑️</button></td>`;
                         routesTableBody.appendChild(row);
                     });
                     
@@ -149,16 +176,12 @@
                     }).addTo(mapa);
                 });
             
-            // --- LÓGICA DE DELEÇÃO (SIMULADA) ---
             function handleDelete(event) {
                 const button = event.target.closest('.delete-btn');
                 if (!button) return;
-
                 const itemName = button.dataset.name;
                 const itemType = button.dataset.type;
-
-                if (confirm(`Tem certeza que deseja apagar o ${itemType} "${itemName}"?\n\n(Atenção: a exclusão é apenas visual e será desfeita ao recarregar a página)`)) {
-                    // Remove a linha da tabela
+                if (confirm(`Tem certeza que deseja apagar o ${itemType} "${itemName}"?\n\n(Atenção: a exclusão é apenas visual)`)) {
                     button.closest('tr').remove();
                     console.log(`SIMULAÇÃO: ${itemType} "${itemName}" apagado.`);
                     alert(`${itemType} "${itemName}" foi apagado da visualização.`);
@@ -167,8 +190,6 @@
             pointsTableBody.addEventListener('click', handleDelete);
             routesTableBody.addEventListener('click', handleDelete);
 
-            // --- LÓGICA DAS ABAS E MODAL ---
-            // (O restante do JS para abas e modal permanece o mesmo)
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
@@ -180,7 +201,47 @@
                     if (targetTab === 'dashboard') setTimeout(() => mapa.invalidateSize(), 10);
                 });
             });
-            // (Código do modal aqui...)
+
+            const modal = document.getElementById('add-modal');
+            const addPointBtn = document.getElementById('add-point-btn');
+            const addRouteBtn = document.getElementById('add-route-btn');
+            const closeModalBtn = document.getElementById('modal-close-btn');
+            const cancelBtn = document.getElementById('modal-cancel-btn');
+            const form = document.getElementById('modal-form');
+            const typeRadios = document.querySelectorAll('input[name="item-type"]');
+            const pointSection = document.getElementById('form-point-section');
+            const routeSection = document.getElementById('form-route-section');
+            const modalTitle = document.getElementById('modal-title');
+            
+            const openModal = (type) => { form.reset(); document.getElementById(`type-${type}`).checked = true; toggleFormSections(type); modal.classList.add('visible'); };
+            const closeModal = () => modal.classList.remove('visible');
+            const toggleFormSections = (type) => {
+                modalTitle.innerText = type === 'point' ? "Adicionar Novo Ponto" : "Adicionar Nova Rota";
+                pointSection.classList.toggle('hidden', type !== 'point');
+                routeSection.classList.toggle('hidden', type !== 'route');
+            };
+            addPointBtn.addEventListener('click', () => openModal('point'));
+            addRouteBtn.addEventListener('click', () => openModal('route'));
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+            typeRadios.forEach(radio => radio.addEventListener('change', (e) => toggleFormSections(e.target.value)));
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const type = new FormData(form).get('item-type');
+                let newItem;
+                if (type === 'point') {
+                    newItem = { type: "Feature", properties: { name: document.getElementById('point-name').value, zone: document.getElementById('point-zone').value, dock: document.getElementById('point-name').value.split(' ').pop(), type: 'point' }, geometry: { type: "Point", coordinates: document.getElementById('point-coords').value.split(',').map(Number) } };
+                } else {
+                    const coordsText = `[${document.getElementById('route-coords').value.trim()}]`;
+                    newItem = { type: "Feature", properties: { name: document.getElementById('route-name').value, type: 'route' }, geometry: { type: "LineString", coordinates: JSON.parse(coordsText) } };
+                }
+                console.log("--- NOVO ITEM (SIMULAÇÃO DE SALVAMENTO) ---");
+                console.log(JSON.stringify(newItem, null, 2));
+                alert("Item criado! Verifique o console (F12) para ver os dados gerados.");
+                closeModal();
+            });
         });
     </script>
 </body>
