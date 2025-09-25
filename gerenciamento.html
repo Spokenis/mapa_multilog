@@ -100,7 +100,7 @@
 
         // Lógica das abas e carregamento de dados
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('dados_mapa.geojson')
+            fetch('rotas.geojson')
                 .then(response => response.json())
                 .then(data => {
                     const rotas = data.features.filter(f => f.properties.type === 'route');
