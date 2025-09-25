@@ -85,7 +85,7 @@
         const startPoint = L.latLng(-26.951650, -48.750924);
         L.marker(startPoint, { icon: guaritaIcon, title: 'Guarita' }).addTo(mapa);
 
-        fetch('dados_mapa.geojson')
+        fetch('rotas.geojson')
             .then(response => response.json())
             .then(data => {
                 todasAsRotas = data.features.filter(f => f.properties.type === 'route');
@@ -102,7 +102,7 @@
                     }
                 }).addTo(mapa);
             })
-            .catch(error => console.error("Erro ao carregar dados_mapa.geojson:", error));
+            .catch(error => console.error("Erro ao carregar rotas.geojson:", error));
 
         function desenharRota(nomeDaZona) {
             if (camadaRotaAtual) mapa.removeLayer(camadaRotaAtual);
@@ -134,4 +134,5 @@
         document.getElementById('search-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
     </script>
 </body>
+
 </html>
