@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <style>
-        :root { --multilog-navy: #00113D; --multilog-cyan: #00A99D; --white: #FFFFFF; --light-gray: #f0f2f5; --text-dark: #333; --text-light: #6c757d; --border-gray: #e0e0e0; --shadow: 0 4px 12px rgba(0,0,0,0.08); --green: #28a745; --yellow: #ffc107; }
+        :root { --multilog-navy: #00113D; --multilog-cyan: #00A99D; --white: #FFFFFF; --light-gray: #f0f2f5; --text-dark: #333; --text-light: #6c757d; --border-gray: #e0e0e0; --shadow: 0 4px 12px rgba(0,0,0,0.08); }
         body { margin: 0; font-family: 'DM Sans', sans-serif; background-color: var(--light-gray); color: var(--text-dark); }
         .dashboard-container { display: flex; flex-direction: column; padding: 24px; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -17,24 +17,32 @@
         .main-nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border-gray); }
         .main-nav a { padding: 12px 18px; text-decoration: none; color: var(--text-light); font-weight: 500; border-bottom: 3px solid transparent; cursor: pointer; }
         .main-nav a.active { color: var(--multilog-navy); border-bottom-color: var(--multilog-navy); }
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 24px; }
-        .kpi-card { background-color: var(--white); padding: 20px; border-radius: 8px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; }
-        .kpi-card .icon { padding: 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .kpi-card .icon svg { width: 28px; height: 28px; fill: var(--white); }
-        .kpi-card .text h3 { margin: 0; font-size: 2rem; font-weight: 700; }
-        .kpi-card .text p { margin: 0; color: var(--text-light); }
-        .main-content { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
-        .card { background-color: var(--white); border-radius: 8px; box-shadow: var(--shadow); padding: 24px; }
+        .card { background-color: var(--white); border-radius: 8px; box-shadow: var(--shadow); padding: 24px; margin-bottom: 24px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-gray); padding-bottom: 12px; margin-bottom: 20px;}
-        .card-header h2, .card h2 { margin-top: 0; font-size: 1.25rem; }
-        #mapa { width: 100%; height: 100%; min-height: 600px; border-radius: 8px; }
-        .vehicle-list ul { list-style: none; padding: 0; margin: 0; max-height: 550px; overflow-y: auto; }
-        .vehicle-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-gray); }
-        .btn-primary { padding: 10px 20px; background-color: var(--multilog-cyan); color: var(--white); border: none; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer; text-decoration: none;}
-        .route-table table { width: 100%; border-collapse: collapse; }
-        .route-table th, .route-table td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-gray); }
-        .route-table .route-actions button { background: none; border: none; cursor: pointer; opacity: 0.7; }
+        .card-header h2 { margin: 0; font-size: 1.25rem; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer; text-decoration: none; }
+        .btn-primary { background-color: var(--multilog-cyan); color: var(--white); }
+        .btn-secondary { background-color: var(--light-gray); color: var(--text-dark); }
+        .data-table table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-gray); }
         .tab-content.hidden { display: none; }
+        
+        /* Estilos do Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-overlay.visible { display: flex; }
+        .modal-content { background: var(--white); padding: 24px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-gray); padding-bottom: 12px; margin-bottom: 20px; }
+        .modal-header h2 { margin: 0; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .form-section { display: flex; flex-direction: column; gap: 16px; }
+        .form-section.hidden { display: none; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 6px; font-weight: 500; }
+        .form-group input, .form-group textarea { padding: 10px; border: 1px solid var(--border-gray); border-radius: 4px; font-size: 1rem; font-family: 'DM Sans', sans-serif; }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+        #mapa { width: 100%; height: 100%; min-height: 600px; border-radius: 8px; }
+
         @media (max-width: 800px) {
             .dashboard-container { padding: 12px; }
             header h1 { font-size: 1.5rem; }
@@ -48,79 +56,130 @@
         <header><h1>Painel de Gerenciamento</h1></header>
         <nav class="main-nav">
             <a class="nav-link active" data-tab="dashboard">Dashboard</a>
-            <a class="nav-link" data-tab="routes">Gerenciar Rotas</a>
+            <a class="nav-link" data-tab="manage">Gerenciar Mapa</a>
         </nav>
+
         <div id="dashboard" class="tab-content">
-            <div class="kpi-grid"></div>
-            <div class="main-content">
-                <div class="card"><div id="mapa"></div></div>
-                <div class="card vehicle-list"><h2>Veículos Ativos</h2></div>
+            <div class="card">
+                <div id="mapa"></div>
             </div>
         </div>
-        <div id="routes" class="tab-content hidden">
+
+        <div id="manage" class="tab-content hidden">
              <div class="card">
                 <div class="card-header">
-                    <h2>Rotas Cadastradas</h2>
-                    <a href="#" class="btn-primary">Adicionar Nova Rota</a>
+                    <h2>Pontos de Interesse</h2>
+                    <button class="btn btn-primary" id="add-point-btn">Adicionar Ponto</button>
                 </div>
-                <div class="route-table">
+                <div class="data-table">
                     <table>
-                        <thead><tr><th>Nome da Rota</th><th>Nº de Pontos</th><th style="text-align: right;">Ações</th></tr></thead>
-                        <tbody id="route-table-body"></tbody>
+                        <thead><tr><th>Nome</th><th>Zona</th><th>Doca</th></tr></thead>
+                        <tbody id="points-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2>Rotas Cadastradas</h2>
+                    <button class="btn btn-primary" id="add-route-btn">Adicionar Rota</button>
+                </div>
+                <div class="data-table">
+                    <table>
+                        <thead><tr><th>Nome da Rota</th><th>Nº de Pontos</th></tr></thead>
+                        <tbody id="routes-table-body"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+
+    <div id="add-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Adicionar Novo Item</h2>
+                <button id="modal-close-btn" class="modal-close">&times;</button>
+            </div>
+            <form id="modal-form">
+                <div class="form-group">
+                    <label>Tipo de Item</label>
+                    <div>
+                        <input type="radio" id="type-point" name="item-type" value="point" checked>
+                        <label for="type-point">Ponto de Interesse</label>
+                        <input type="radio" id="type-route" name="item-type" value="route" style="margin-left: 16px;">
+                        <label for="type-route">Rota</label>
+                    </div>
+                </div>
+
+                <div id="form-point-section" class="form-section">
+                    <div class="form-group">
+                        <label for="point-name">Nome (Ex: AZ1 DC11)</label>
+                        <input type="text" id="point-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="point-zone">Zona (Ex: AZ1)</label>
+                        <input type="text" id="point-zone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="point-coords">Coordenadas (Longitude, Latitude)</label>
+                        <input type="text" id="point-coords" placeholder="-48.12345, -26.12345" required>
+                    </div>
+                </div>
+
+                <div id="form-route-section" class="form-section hidden">
+                    <div class="form-group">
+                        <label for="route-name">Nome da Rota (Ex: AZ1)</label>
+                        <input type="text" id="route-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="route-coords">Coordenadas da Rota</label>
+                        <textarea id="route-coords" placeholder="Cole aqui a lista de coordenadas [lng, lat], uma por linha. Ex:&#10;[-48.123, -26.123],&#10;[-48.456, -26.456]," required></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" id="modal-cancel-btn" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // --- ADICIONADO: Camadas de mapa ---
         const ruas = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 });
         const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 });
-
-        const mapa = L.map('mapa', {
-            center: [-26.9535, -48.7500],
-            zoom: 17,
-            layers: [ruas] // Camada inicial
-        });
-
-        // --- ADICIONADO: Controle de camadas ---
-        const baseMaps = {
-            "Ruas": ruas,
-            "Satélite": satelite
-        };
-        L.control.layers(baseMaps).addTo(mapa);
+        const mapa = L.map('mapa', { center: [-26.9535, -48.7500], zoom: 17, layers: [ruas] });
+        L.control.layers({ "Ruas": ruas, "Satélite": satelite }).addTo(mapa);
         
         const truckIcon = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61922.png', iconSize: [32, 32], iconAnchor: [16, 16] });
         const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [32, 32], iconAnchor: [16, 32]});
         
         // Simulação de caminhões
-        [ { position: [-26.9525, -48.7508], popup: "<b>Veículo 1</b><br>Status: A caminho" }, { position: [-26.9555, -48.7499], popup: "<b>Veículo 2</b><br>Status: Parado" } ].forEach(truck => L.marker(truck.position, { icon: truckIcon }).addTo(mapa).bindPopup(truck.popup));
+        [ { pos: [-26.9525, -48.7508], popup: "<b>Veículo 1</b>" }, { pos: [-26.9555, -48.7499], popup: "<b>Veículo 2</b>" } ].forEach(t => L.marker(t.pos, { icon: truckIcon }).addTo(mapa).bindPopup(t.popup));
 
-        // Lógica das abas e carregamento de dados
         document.addEventListener('DOMContentLoaded', () => {
+            // --- CARREGAMENTO INICIAL DOS DADOS ---
             fetch('rotas.geojson')
                 .then(response => response.json())
                 .then(data => {
                     const rotas = data.features.filter(f => f.properties.type === 'route');
                     const pontos = data.features.filter(f => f.properties.type === 'point');
-                    const tableBody = document.getElementById('route-table-body');
                     
-                    // Popula a tabela de rotas
-                    rotas.forEach(route => {
-                        const row = `<tr><td>${route.properties.name}</td><td>${route.geometry.coordinates.length}</td><td class="route-actions" style="text-align: right;"><button title="Editar">✏️</button><button title="Excluir">🗑️</button></td></tr>`;
-                        tableBody.innerHTML += row;
-                    });
+                    // Popula as tabelas na aba de gerenciamento
+                    const routesTableBody = document.getElementById('routes-table-body');
+                    rotas.forEach(r => routesTableBody.innerHTML += `<tr><td>${r.properties.name}</td><td>${r.geometry.coordinates.length}</td></tr>`);
+                    
+                    const pointsTableBody = document.getElementById('points-table-body');
+                    pontos.forEach(p => pointsTableBody.innerHTML += `<tr><td>${p.properties.name}</td><td>${p.properties.zone || '--'}</td><td>${p.properties.dock || '--'}</td></tr>`);
 
-                    // Adiciona os pontos de interesse ao mapa
+                    // Adiciona os pontos de interesse ao mapa do dashboard
                     L.geoJSON(pontos, {
-                        pointToLayer: (feature, latlng) => L.marker(latlng, { icon: docaIcon, title: feature.properties.name }),
-                        onEachFeature: (feature, layer) => layer.bindPopup(`<b>${feature.properties.name}</b>`)
+                        pointToLayer: (feat, latlng) => L.marker(latlng, { icon: docaIcon, title: feat.properties.name }),
+                        onEachFeature: (feat, layer) => layer.bindPopup(`<b>${feat.properties.name}</b>`)
                     }).addTo(mapa);
                 });
             
-            // Lógica para trocar de abas
+            // --- LÓGICA DAS ABAS ---
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
@@ -129,10 +188,87 @@
                     const targetTab = link.getAttribute('data-tab');
                     document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
                     document.getElementById(targetTab).classList.remove('hidden');
-                    if (targetTab === 'dashboard') {
-                        setTimeout(() => mapa.invalidateSize(), 10);
-                    }
+                    if (targetTab === 'dashboard') setTimeout(() => mapa.invalidateSize(), 10);
                 });
+            });
+
+            // --- LÓGICA DO MODAL ---
+            const modal = document.getElementById('add-modal');
+            const addPointBtn = document.getElementById('add-point-btn');
+            const addRouteBtn = document.getElementById('add-route-btn');
+            const closeModalBtn = document.getElementById('modal-close-btn');
+            const cancelBtn = document.getElementById('modal-cancel-btn');
+            const form = document.getElementById('modal-form');
+            const typeRadios = document.querySelectorAll('input[name="item-type"]');
+            const pointSection = document.getElementById('form-point-section');
+            const routeSection = document.getElementById('form-route-section');
+            const modalTitle = document.getElementById('modal-title');
+            
+            const openModal = (type) => {
+                form.reset(); // Limpa o formulário
+                document.getElementById(`type-${type}`).checked = true;
+                toggleFormSections(type);
+                modal.classList.add('visible');
+            };
+            const closeModal = () => modal.classList.remove('visible');
+            const toggleFormSections = (type) => {
+                if (type === 'point') {
+                    modalTitle.innerText = "Adicionar Novo Ponto";
+                    pointSection.classList.remove('hidden');
+                    routeSection.classList.add('hidden');
+                } else {
+                    modalTitle.innerText = "Adicionar Nova Rota";
+                    pointSection.classList.add('hidden');
+                    routeSection.classList.remove('hidden');
+                }
+            };
+
+            addPointBtn.addEventListener('click', () => openModal('point'));
+            addRouteBtn.addEventListener('click', () => openModal('route'));
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+            typeRadios.forEach(radio => radio.addEventListener('change', (e) => toggleFormSections(e.target.value)));
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const type = new FormData(form).get('item-type');
+                let newItem;
+
+                if (type === 'point') {
+                    newItem = {
+                        type: "Feature",
+                        properties: {
+                            name: document.getElementById('point-name').value,
+                            zone: document.getElementById('point-zone').value,
+                            dock: document.getElementById('point-name').value.split(' ').pop(),
+                            type: 'point'
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: document.getElementById('point-coords').value.split(',').map(Number)
+                        }
+                    };
+                } else { // type === 'route'
+                    // Simples conversão de texto para array de coordenadas
+                    const coordsText = `[${document.getElementById('route-coords').value.trim()}]`;
+                    newItem = {
+                        type: "Feature",
+                        properties: {
+                            name: document.getElementById('route-name').value,
+                            type: 'route'
+                        },
+                        geometry: {
+                            type: "LineString",
+                            coordinates: JSON.parse(coordsText)
+                        }
+                    };
+                }
+                
+                console.log("--- NOVO ITEM (SIMULAÇÃO DE SALVAMENTO) ---");
+                console.log(JSON.stringify(newItem, null, 2));
+                alert("Item criado! Verifique o console (F12) para ver os dados gerados.\n\n(Esta é uma simulação, o arquivo .geojson não foi alterado)");
+                closeModal();
             });
         });
     </script>
