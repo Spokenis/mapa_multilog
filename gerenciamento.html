@@ -4,18 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Gerenciamento | Multilog</title>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <style>
-        :root {
-            --multilog-navy: #00113D; --multilog-cyan: #00A99D; --white: #FFFFFF;
-            --light-gray: #f0f2f5; --text-dark: #333; --text-light: #6c757d;
-            --border-gray: #e0e0e0; --shadow: 0 4px 12px rgba(0,0,0,0.08);
-            --green: #28a745; --yellow: #ffc107;
-        }
+        :root { --multilog-navy: #00113D; --multilog-cyan: #00A99D; --white: #FFFFFF; --light-gray: #f0f2f5; --text-dark: #333; --text-light: #6c757d; --border-gray: #e0e0e0; --shadow: 0 4px 12px rgba(0,0,0,0.08); --green: #28a745; --yellow: #ffc107; }
         body { margin: 0; font-family: 'DM Sans', sans-serif; background-color: var(--light-gray); color: var(--text-dark); }
         .dashboard-container { display: flex; flex-direction: column; padding: 24px; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -36,17 +30,11 @@
         #mapa { width: 100%; height: 100%; min-height: 600px; border-radius: 8px; }
         .vehicle-list ul { list-style: none; padding: 0; margin: 0; max-height: 550px; overflow-y: auto; }
         .vehicle-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-gray); }
-        .status { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .status.green { color: var(--green); } .status.green .status-dot { background-color: var(--green); }
-        .status.yellow { color: var(--yellow); } .status.yellow .status-dot { background-color: var(--yellow); }
-        .status.gray { color: var(--text-light); } .status.gray .status-dot { background-color: var(--text-light); }
         .btn-primary { padding: 10px 20px; background-color: var(--multilog-cyan); color: var(--white); border: none; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer; text-decoration: none;}
         .route-table table { width: 100%; border-collapse: collapse; }
         .route-table th, .route-table td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-gray); }
         .route-table .route-actions button { background: none; border: none; cursor: pointer; opacity: 0.7; }
         .tab-content.hidden { display: none; }
-
         @media (max-width: 800px) {
             .dashboard-container { padding: 12px; }
             header h1 { font-size: 1.5rem; }
@@ -62,26 +50,13 @@
             <a class="nav-link active" data-tab="dashboard">Dashboard</a>
             <a class="nav-link" data-tab="routes">Gerenciar Rotas</a>
         </nav>
-
         <div id="dashboard" class="tab-content">
-            <div class="kpi-grid">
-                 <div class="kpi-card"><div class="icon" style="background-color: #0d6efd;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M112 0C85.5 0 64 21.5 64 48V96H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h51.2L96 336H48c-17.7 0-32 14.3-32 32s14.3 32 32 32h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H128V224h16c17.7 0 32-14.3 32-32s-14.3-32-32-32H112V48c0-8.8 7.2-16 16-16H288c8.8 0 16 7.2 16 16v80c0 17.7-14.3 32-32 32H256v32h51.2L320 336H272c-17.7 0-32 14.3-32 32s14.3 32 32 32h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H352V224h16c17.7 0 32-14.3 32-32s-14.3-32-32-32H352V48c0-26.5-21.5-48-48-48H112zM448 224a128 128 0 1 0 0 256 128 128 0 1 0 0-256zm-48.5 25.5c-8.5-6.9-20-6-27.8 2.5s-6.9 20 2.5 27.8l32 40c6.9 8.5 20 6 27.8-2.5s6.9-20-2.5-27.8l-32-40zm93.3-2.5c-8.5-6.9-20-6-27.8 2.5s-6.9 20 2.5 27.8l32 40c6.9 8.5 20 6 27.8-2.5s6.9-20-2.5-27.8l-32-40z"/></svg></div><div class="text"><h3>8</h3><p>Veículos Ativos</p></div></div>
-                 <div class="kpi-card"><div class="icon" style="background-color: var(--green);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M0 48C0 21.5 21.5 0 48 0H336c26.5 0 48 21.5 48 48V207.4l18.6-31c4-6.7 10.9-10.8 18.6-11.4s15.4 1.2 21.3 6.6l168 152.7c5.6 5.1 8.8 12.2 8.8 19.8s-3.2 14.7-8.8 19.8l-48 43.6V464c0 26.5-21.5 48-48 48H320c-17.7 0-32-14.3-32-32V384H112v80c0 17.7-14.3 32-32 32H48c-26.5 0-48-21.5-48-48V48zm80 0h16v80H80V0zm112 0h16v80h-16V0zm-48 48a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zM80 208h16v80H80v-80zm112 208h16v80h-16v-80z"/></svg></div><div class="text"><h3>4 / 7</h3><p>Docas Disponíveis</p></div></div>
-                 <div class="kpi-card"><div class="icon" style="background-color: var(--yellow);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M32 64C32 28.7 60.7 0 96 0H288c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V64zM184 288a24 24 0 1 1 16 45.9V408c0 13.3-10.7 24-24 24s-24-10.7-24-24V333.9a24 24 0 1 1 16-45.9zM224 160a32 32 0 1 1 -64 0 32 32 0 1 1 64 0z"/></svg></div><div class="text"><h3>2</h3><p>Caminhões Parados</p></div></div>
-                 <div class="kpi-card"><div class="icon" style="background-color: var(--text-light);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM169.8 165.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></div><div class="text"><h3>1</h3><p>Sem Rota Definida</p></div></div>
-            </div>
+            <div class="kpi-grid"></div>
             <div class="main-content">
                 <div class="card"><div id="mapa"></div></div>
-                <div class="card vehicle-list">
-                    <h2>Veículos Ativos</h2>
-                    <ul>
-                        <li><div class="vehicle-info"><strong>Veículo 1</strong><span>Destino: AZ2</span></div><div class="status green"><div class="status-dot"></div><span>A caminho</span></div></li>
-                        <li><div class="vehicle-info"><strong>Veículo 2</strong><span>Destino: AZ7</span></div><div class="status yellow"><div class="status-dot"></div><span>Parado</span></div></li>
-                    </ul>
-                </div>
+                <div class="card vehicle-list"><h2>Veículos Ativos</h2></div>
             </div>
         </div>
-
         <div id="routes" class="tab-content hidden">
              <div class="card">
                 <div class="card-header">
@@ -91,8 +66,7 @@
                 <div class="route-table">
                     <table>
                         <thead><tr><th>Nome da Rota</th><th>Nº de Pontos</th><th style="text-align: right;">Ações</th></tr></thead>
-                        <tbody id="route-table-body">
-                            </tbody>
+                        <tbody id="route-table-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -101,37 +75,52 @@
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        const mapa = L.map('mapa').setView([-26.9535, -48.7500], 17);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapa);
+        // --- ADICIONADO: Camadas de mapa ---
+        const ruas = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 });
+        const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 });
+
+        const mapa = L.map('mapa', {
+            center: [-26.9535, -48.7500],
+            zoom: 17,
+            layers: [ruas] // Camada inicial
+        });
+
+        // --- ADICIONADO: Controle de camadas ---
+        const baseMaps = {
+            "Ruas": ruas,
+            "Satélite": satelite
+        };
+        L.control.layers(baseMaps).addTo(mapa);
         
         const truckIcon = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61922.png', iconSize: [32, 32], iconAnchor: [16, 16] });
-        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [38, 38], iconAnchor: [19, 38]});
+        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [32, 32], iconAnchor: [16, 32]});
         
-        // Simulação de caminhões e docas
+        // Simulação de caminhões
         [ { position: [-26.9525, -48.7508], popup: "<b>Veículo 1</b><br>Status: A caminho" }, { position: [-26.9555, -48.7499], popup: "<b>Veículo 2</b><br>Status: Parado" } ].forEach(truck => L.marker(truck.position, { icon: truckIcon }).addTo(mapa).bindPopup(truck.popup));
-        [ { name: "AZ1", coords: L.latLng(-26.9535299, -48.7505575) }, { name: "AZ2", coords: L.latLng(-26.9562354, -48.7495152) } ].forEach(doca => L.marker(doca.coords, { icon: docaIcon }).addTo(mapa).bindPopup(`<b>${doca.name}</b>`));
 
-        // --- LÓGICA DAS ABAS E CARREGAMENTO DE ROTAS ---
+        // Lógica das abas e carregamento de dados
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('rotas.geojson')
+            fetch('dados_mapa.geojson')
                 .then(response => response.json())
                 .then(data => {
+                    const rotas = data.features.filter(f => f.properties.type === 'route');
+                    const pontos = data.features.filter(f => f.properties.type === 'point');
                     const tableBody = document.getElementById('route-table-body');
-                    data.features.forEach(route => {
-                        const row = `
-                            <tr>
-                                <td>${route.properties.name}</td>
-                                <td>${route.geometry.coordinates.length}</td>
-                                <td class="route-actions" style="text-align: right;">
-                                    <button title="Editar">✏️</button>
-                                    <button title="Excluir">🗑️</button>
-                                </td>
-                            </tr>
-                        `;
+                    
+                    // Popula a tabela de rotas
+                    rotas.forEach(route => {
+                        const row = `<tr><td>${route.properties.name}</td><td>${route.geometry.coordinates.length}</td><td class="route-actions" style="text-align: right;"><button title="Editar">✏️</button><button title="Excluir">🗑️</button></td></tr>`;
                         tableBody.innerHTML += row;
                     });
-                });
 
+                    // Adiciona os pontos de interesse ao mapa
+                    L.geoJSON(pontos, {
+                        pointToLayer: (feature, latlng) => L.marker(latlng, { icon: docaIcon, title: feature.properties.name }),
+                        onEachFeature: (feature, layer) => layer.bindPopup(`<b>${feature.properties.name}</b>`)
+                    }).addTo(mapa);
+                });
+            
+            // Lógica para trocar de abas
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
