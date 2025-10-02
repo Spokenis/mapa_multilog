@@ -36,6 +36,7 @@
       "properties": { "name": "Polo Saúde", "type": "route" },
       "geometry": { "type": "LineString", "coordinates": [ [-48.750814,-26.951604],[-48.750813,-26.95192],[-48.750756,-26.952142],[-48.750514,-26.952391],[-48.750307,-26.952578],[-48.74994,-26.953017],[-48.74953,-26.953507],[-48.749346,-26.953733],[-48.749112,-26.95409],[-48.749018,-26.954588],[-48.749055,-26.95501],[-48.74909,-26.955422],[-48.749213,-26.95576] ] }
     },
+
 {
   "type": "Feature",
   "properties": { "name": "Jaraguá", "type": "route" },
@@ -57,7 +58,7 @@
       [-48.7492593, -26.9529111]
     ]
   }
-}
+},
 
 {
   "type": "Feature",
@@ -78,7 +79,7 @@
       [-48.7494967, -26.9531107]
     ]
   }
-}
+},
 
 {
   "type": "Feature",
@@ -93,7 +94,7 @@
       [-48.7497488, -26.9532255]
     ]
   }
-}
+},
 {
   "type": "Feature",
   "properties": { "name": "Itajai", "type": "route" },
@@ -109,7 +110,7 @@
       [-48.7499688, -26.9533402]
     ]
   }
-}
+},
 
     { "type": "Feature", "properties": { "name": "AZ7 DC1", "zone": "AZ7", "dock": "DC1", "type": "point" }, "geometry": { "type": "Point", "coordinates": [-48.7516964, -26.9544944] } },
     { "type": "Feature", "properties": { "name": "AZ7 DC2", "zone": "AZ7", "dock": "DC2", "type": "point" }, "geometry": { "type": "Point", "coordinates": [-48.751398, -26.9548942] } },
@@ -126,7 +127,7 @@
     { "type": "Feature", "properties": { "name": "AZ2 DC9", "zone": "AZ2", "dock": "DC9", "type": "point" }, "geometry": { "type": "Point", "coordinates": [-48.749518, -26.9562356] } },
     { "type": "Feature", "properties": { "name": "AZ2 DC8", "zone": "AZ2", "dock": "DC8", "type": "point" }, "geometry": { "type": "Point", "coordinates": [-48.7496863, -26.9564344] } },
     { "type": "Feature", "properties": { "name": "AZ5 DC1", "zone": "AZ5", "dock": "DC1", "type": "point" }, "geometry": { "type": "Point", "coordinates": [-48.7494263, -26.9506359] } },
-    { "type": "Feature", "properties": { "name": "ENTRADA", "zone": "ENTRADA", "dock": null, "type": "point" }, "geometry": { "type": "Point", "coordinates": [-48.750827, -26.951597, 13.54] } },
+    
     { "type": "Feature", "properties": { "name": "AZ1 DC1", "zone": "AZ1", "dock": "DC1", "type": "point" }, "geometry": { "type": "Point", "coordinates": [-48.7518501, -26.9539517] } },
     { "type": "Feature", "properties": { "name": "AZ1 DC2", "zone": "AZ1", "dock": "DC2", "type": "point" }, "geometry": { "type": "Point", "coordinates": [-48.7515685, -26.9543259] } },
     { "type": "Feature", "properties": { "name": "AZ1 DC3", "zone": "AZ1", "dock": "DC3", "type": "point" }, "geometry": { "type": "Point", "coordinates": [-48.751236, -26.9547827] } },
