@@ -13,16 +13,23 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css" />
 
     <style>
-        :root { --multilog-navy: #00113D; --multilog-cyan: #00A99D; --white: #FFFFFF; --light-gray: #f0f2f5; --text-dark: #333; --border-gray: #e0e0e0; }
-        body { margin: 0; font-family: 'DM Sans', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--light-gray); }
-        .container { width: 95%; max-width: 1400px; height: 90vh; display: flex; flex-direction: column; border: 1px solid var(--border-gray); box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 8px; overflow: hidden; background-color: var(--white); }
+        :root {
+            --multilog-navy: #202644;
+            --multilog-orange: #ee7d08;
+            --white: #FFFFFF;
+            --light-gray: #f0f2f5;
+            --text-dark: #333;
+            --border-gray: #e0e0e0;
+        }
+        body { margin: 0; font-family: 'DM Sans', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--multilog-navy); }
+        .container { width: 95%; max-width: 1400px; height: 90vh; display: flex; flex-direction: column; border: 1px solid var(--border-gray); box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 8px; overflow: hidden; background-color: var(--multilog-navy); }
         .search-bar { padding: 12px 20px; background-color: var(--white); border-bottom: 1px solid var(--border-gray); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
         .logo-container { display: flex; align-items: center; }
-        .logo-svg { height: 30px; width: auto; fill: var(--multilog-navy); }
+        .logo-svg { height: 30px; width: auto; color: var(--multilog-navy); }
         .search-controls { display: flex; flex-grow: 1; min-width: 280px; }
         #search-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px 0 0 6px; font-size: 1rem; border-right: none; }
-        #search-input:focus { outline: none; border-color: var(--multilog-cyan); }
-        #search-button { padding: 10px 22px; border: 1px solid var(--multilog-cyan); background-color: var(--multilog-cyan); color: var(--white); font-weight: 500; font-size: 1rem; border-radius: 0 6px 6px 0; cursor: pointer; }
+        #search-input:focus { outline: none; border-color: var(--multilog-orange); }
+        #search-button { padding: 10px 22px; border: 1px solid var(--multilog-orange); background-color: var(--multilog-orange); color: var(--white); font-weight: 500; font-size: 1rem; border-radius: 0 6px 6px 0; cursor: pointer; }
         .map-header { padding: 8px 20px; text-align: center; background-color: #fafafa; display: flex; justify-content: space-between; align-items: center; }
         .map-header h1 { margin: 0; font-size: 1.25rem; font-weight: 500; color: var(--text-dark); flex-grow: 1; text-align: center; }
         #mapa { flex-grow: 1; height: 100%; border-top: 1px solid var(--border-gray); }
@@ -56,7 +63,6 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
 
     <script>
-        // --- ADICIONADO: Camadas de mapa ---
         const ruas = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 });
         const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 });
 
@@ -64,24 +70,20 @@
         const mapa = L.map('mapa', {
             center: [-26.9535, -48.7500],
             zoom: 17,
-            layers: [ruas], // Camada inicial
+            layers: [ruas],
             maxBounds: bounds,
             minZoom: 16
         });
 
-        // --- ADICIONADO: Controle de camadas ---
-        const baseMaps = {
-            "Ruas": ruas,
-            "Satélite": satelite
-        };
+        const baseMaps = { "Ruas": ruas, "Satélite": satelite };
         L.control.layers(baseMaps).addTo(mapa);
 
         let todasAsRotas = [];
         let todosOsPontos = [];
         let camadaRotaAtual = null;
 
-        const guaritaIcon = L.icon({ iconUrl: 'guarita.png', iconSize: [38, 38], iconAnchor: [19, 38] });
-        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [32, 32], iconAnchor: [16, 32] });
+        const guaritaIcon = L.icon({ iconUrl: 'guarita.png', iconSize: [78, 38], iconAnchor: [19, 38] });
+        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [32, 42], iconAnchor: [16, 32] });
         const startPoint = L.latLng(-26.951650, -48.750924);
         L.marker(startPoint, { icon: guaritaIcon, title: 'Guarita' }).addTo(mapa);
 
@@ -110,7 +112,7 @@
             if (rotaFeature) {
                 const rotaComGuarita = JSON.parse(JSON.stringify(rotaFeature));
                 rotaComGuarita.geometry.coordinates.unshift([startPoint.lng, startPoint.lat]);
-                camadaRotaAtual = L.geoJSON(rotaComGuarita, { style: { color: '#00113D', weight: 5, opacity: 0.7 } }).addTo(mapa);
+                camadaRotaAtual = L.geoJSON(rotaComGuarita, { style: { color: '#ee7d08', weight: 5, opacity: 0.7 } }).addTo(mapa); // Rota agora em laranja para melhor contraste
                 mapa.fitBounds(camadaRotaAtual.getBounds().pad(0.1));
             } else {
                 alert(`Não há uma rota principal definida para a zona: ${nomeDaZona}.`);
