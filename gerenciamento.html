@@ -156,7 +156,7 @@
         L.control.layers({ "Ruas": ruas, "Satélite": satelite }).addTo(mapa);
         
         const truckIcon = L.icon({ iconUrl: 'caminhao.png', iconSize: [32, 42], iconAnchor: [16, 16] });
-        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [32, 32], iconAnchor: [16, 32]});
+        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [28, 28], iconAnchor: [16, 32]});
         
         [ { pos: [-26.9525, -48.7508], popup: "<b>Veículo 1</b>" }, { pos: [-26.9555, -48.7499], popup: "<b>Veículo 2</b>" } ].forEach(t => L.marker(t.pos, { icon: truckIcon }).addTo(mapa).bindPopup(t.popup));
 
