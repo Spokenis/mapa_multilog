@@ -39,8 +39,9 @@
         .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-gray); padding-bottom: 12px; margin-bottom: 20px;}
         .card-header h2, .card h2 { margin-top: 0; font-size: 1.25rem; }
         #mapa { width: 100%; height: 100%; min-height: 600px; border-radius: 8px; }
-        .vehicle-list ul, .data-table { list-style: none; padding: 0; margin: 0; max-height: 550px; overflow-y: auto; }
+        .vehicle-list ul, .data-table ul { list-style: none; padding: 0; margin: 0; max-height: 550px; overflow-y: auto; }
         .vehicle-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-gray); }
+        .vehicle-list li:last-child { border-bottom: none; }
         .status { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem; }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; }
         .status.green .status-dot { background-color: var(--green); }
@@ -85,7 +86,9 @@
             </div>
             <div class="main-content">
                 <div class="card"><div id="mapa"></div></div>
-                <div class="card vehicle-list"><h2>Veículos Ativos</h2></div>
+                <div class="card vehicle-list">
+                    <h2>Veículos Ativos</h2>
+                    </div>
             </div>
         </div>
 
@@ -157,12 +160,46 @@
         
         const truckIcon = L.icon({ iconUrl: 'caminhao.png', iconSize: [32, 42], iconAnchor: [16, 16] });
         const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [28, 28], iconAnchor: [16, 32]});
-        
-        [ { pos: [-26.9525, -48.7508], popup: "<b>Veículo 1</b>" }, { pos: [-26.9555, -48.7499], popup: "<b>Veículo 2</b>" } ].forEach(t => L.marker(t.pos, { icon: truckIcon }).addTo(mapa).bindPopup(t.popup));
+
+        // --- DADOS DOS VEÍCULOS ---
+        const veiculosAtivos = [
+            { id: 'ID-84729', status: 'Em Movimento', statusColor: 'green', destination: 'Pátio Leste', pos: [-26.9525, -48.7508] },
+            { id: 'ID-33910', status: 'Aguardando Doca', statusColor: 'yellow', destination: 'AZ1 DC11', pos: [-26.9555, -48.7499] },
+            { id: 'ID-51582', status: 'Em Movimento', statusColor: 'green', destination: 'Guarita de Saída', pos: [-26.9540, -48.7515] },
+            { id: 'ID-79301', status: 'Parado', statusColor: 'gray', destination: 'Estacionamento', pos: [-26.9565, -48.7485] },
+            { id: 'ID-44219', status: 'Aguardando Doca', statusColor: 'yellow', destination: 'AZ2 DC04', pos: [-26.9518, -48.7490] }
+        ];
+
+        // Adiciona os marcadores dos veículos no mapa
+        veiculosAtivos.forEach(veiculo => {
+            L.marker(veiculo.pos, { icon: truckIcon })
+             .addTo(mapa)
+             .bindPopup(`<b>${veiculo.id}</b><br>Status: ${veiculo.status}`);
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             const pointsTableBody = document.getElementById('points-table-body');
             const routesTableBody = document.getElementById('routes-table-body');
+            const vehicleListContainer = document.querySelector('.vehicle-list');
+
+            // --- POPULA A LISTA DE VEÍCULOS ATIVOS ---
+            const ul = document.createElement('ul');
+            veiculosAtivos.forEach(veiculo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div>
+                        <strong style="display: block;">${veiculo.id}</strong>
+                        <span style="font-size: 0.9em; color: var(--text-light);">${veiculo.destination}</span>
+                    </div>
+                    <div class="status ${veiculo.statusColor}">
+                        <span class="status-dot"></span>
+                        <span>${veiculo.status}</span>
+                    </div>
+                `;
+                ul.appendChild(li);
+            });
+            vehicleListContainer.appendChild(ul);
+
 
             fetch('rotas.geojson')
                 .then(response => response.json())
