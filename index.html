@@ -82,8 +82,8 @@
         let todosOsPontos = [];
         let camadaRotaAtual = null;
 
-        const guaritaIcon = L.icon({ iconUrl: 'guarita.png', iconSize: [78, 38], iconAnchor: [19, 38] });
-        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [32, 42], iconAnchor: [16, 32] });
+        const guaritaIcon = L.icon({ iconUrl: 'guarita.png', iconSize: [68, 28], iconAnchor: [19, 38] });
+        const docaIcon = L.icon({ iconUrl: 'doca.png', iconSize: [25, 25], iconAnchor: [16, 32] });
         const startPoint = L.latLng(-26.951650, -48.750924);
         L.marker(startPoint, { icon: guaritaIcon, title: 'Guarita' }).addTo(mapa);
 
@@ -136,5 +136,6 @@
         document.getElementById('search-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
     </script>
 </body>
+
 
 </html>
