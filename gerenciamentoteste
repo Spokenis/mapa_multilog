@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Rotas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background-color: #f2f2f2;
+    }
+    header {
+      background-color: #0078d7;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #e5e5e5;
+      padding: 10px 0;
+    }
+    nav a {
+      margin: 0 15px;
+      color: #0078d7;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    nav a.active {
+      border-bottom: 2px solid #0078d7;
+    }
+    .dashboard-container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .card {
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #0078d7;
+    }
+    .btn-primary {
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .btn-primary:hover {
+      background-color: #005fa3;
+    }
+    select {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 100%;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>Painel de Gerenciamento de Rotas</header>
+
+  <nav>
+    <a class="nav-link active" data-tab="home">Início</a>
+    <a class="nav-link" data-tab="rotas">Rotas</a>
+    <a class="nav-link" data-tab="qr">Gerar QR Code</a>
+  </nav>
+
+  <div class="dashboard-container">
+    <!-- Aba Início -->
+    <div id="home" class="tab-content active">
+      <div class="card">
+        <div class="card-header">Bem-vindo</div>
+        <p>Selecione uma aba acima para gerenciar rotas ou gerar QR Codes temporários.</p>
+      </div>
+    </div>
+
+    <!-- Aba Rotas -->
+    <div id="rotas" class="tab-content">
+      <div class="card">
+        <div class="card-header">Rotas Cadastradas</div>
+        <div id="lista-rotas">Carregando rotas...</div>
+      </div>
+    </div>
+
+    <!-- Aba Gerar QR Code -->
+    <div id="qr" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2>Gerar QR Code de Rota</h2>
+        </div>
+        <div class="form-group">
+          <label for="select-route">Selecione uma rota:</label>
+          <select id="select-route">
+            <option value="">-- Selecione --</option>
+          </select>
+        </div>
+        <div style="margin-top:20px;">
+          <button id="generate-qr-btn" class="btn-primary">Gerar QR Code</button>
+        </div>
+        <div id="qr-container" style="margin-top:30px; text-align:center;"></div>
+        <p id="qr-expiration" style="text-align:center; color:gray; margin-top:8px;"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script>
+    // --- Controle de Abas ---
+    const tabs = document.querySelectorAll('.nav-link');
+    const contents = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // --- Exibir lista de rotas ---
+    const listaRotas = document.getElementById('lista-rotas');
+    const qrSelect = document.getElementById('select-route');
+
+    fetch('rotas.geojson')
+      .then(res => res.json())
+      .then(data => {
+        const rotas = data.features.filter(f => f.properties.type === 'route');
+        if (rotas.length === 0) {
+          listaRotas.textContent = "Nenhuma rota cadastrada.";
+          return;
+        }
+
+        const ul = document.createElement('ul');
+        rotas.forEach(r => {
+          const li = document.createElement('li');
+          li.textContent = r.properties.name;
+          ul.appendChild(li);
+
+          // adiciona ao select da aba QR
+          const opt = document.createElement('option');
+          opt.value = r.properties.name;
+          opt.textContent = r.properties.name;
+          qrSelect.appendChild(opt);
+        });
+        listaRotas.innerHTML = "";
+        listaRotas.appendChild(ul);
+      })
+      .catch(() => listaRotas.textContent = "Erro ao carregar rotas.");
+
+    // --- GERAR QR CODE ---
+    const qrBtn = document.getElementById('generate-qr-btn');
+    const qrContainer = document.getElementById('qr-container');
+    const qrExpiration = document.getElementById('qr-expiration');
+
+    qrBtn.addEventListener('click', () => {
+      const rota = qrSelect.value;
+      if (!rota) {
+        alert("Selecione uma rota primeiro!");
+        return;
+      }
+
+      const validadeHoras = 3;
+      const expiraEm = Date.now() + validadeHoras * 60 * 60 * 1000;
+      const token = Math.random().toString(36).substring(2, 10);
+      const link = `https://seudominio.com/rota.html?id=${encodeURIComponent(rota)}&token=${token}&exp=${expiraEm}`;
+
+      qrContainer.innerHTML = "";
+      new QRCode(qrContainer, {
+        text: link,
+        width: 180,
+        height: 180
+      });
+
+      const dataExp = new Date(expiraEm).toLocaleString("pt-BR");
+      qrExpiration.textContent = `QR válido até: ${dataExp}`;
+    });
+  </script>
+</body>
+</html>
