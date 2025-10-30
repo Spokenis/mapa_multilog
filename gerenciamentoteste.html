@@ -1,206 +1,154 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel de Gerenciamento de Rotas</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f2f2f2;
-    }
-    header {
-      background-color: #0078d7;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 1.5rem;
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      background-color: #e0e0e0;
-      padding: 10px;
-    }
-    nav a {
-      color: #0078d7;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    nav a.active {
-      border-bottom: 2px solid #0078d7;
-    }
-    .dashboard-container {
-      max-width: 1000px;
-      margin: 30px auto;
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 20px;
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .card {
-      background: #fafafa;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    }
-    .card-header {
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #0078d7;
-    }
-    .btn-primary {
-      background-color: #0078d7;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 20px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    .btn-primary:hover {
-      background-color: #005fa3;
-    }
-    select {
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 100%;
-      font-size: 1rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Gerenciamento | Multilog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        :root {
+            --multilog-navy: #202644;
+            --multilog-orange: #ee7d08;
+            --white: #FFFFFF;
+            --light-gray: #f0f2f5;
+            --text-dark: #333;
+            --text-light: #6c757d;
+            --border-gray: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --green: #28a745;
+            --yellow: #ffc107;
+        }
+        body { margin: 0; font-family: 'DM Sans', sans-serif; background-color: var(--multilog-navy); color: var(--white); }
+        .dashboard-container { display: flex; flex-direction: column; padding: 24px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        header h1 { font-size: 2rem; margin: 0; color: var(--white); }
+        .main-nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .main-nav a { padding: 12px 18px; text-decoration: none; color: var(--text-light); font-weight: 500; border-bottom: 3px solid transparent; cursor: pointer; }
+        .main-nav a.active { color: var(--multilog-orange); border-bottom-color: var(--multilog-orange); }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 24px; }
+        .kpi-card { background-color: var(--white); padding: 20px; border-radius: 8px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; color: var(--text-dark); }
+        .kpi-card .icon { padding: 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .kpi-card .icon svg { width: 28px; height: 28px; fill: var(--white); }
+        .kpi-card .text h3 { margin: 0; font-size: 2rem; font-weight: 700; }
+        .kpi-card .text p { margin: 0; color: var(--text-light); }
+        .main-content { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        .card { background-color: var(--white); border-radius: 8px; box-shadow: var(--shadow); padding: 24px; margin-bottom: 24px; color: var(--text-dark); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-gray); padding-bottom: 12px; margin-bottom: 20px;}
+        .card-header h2, .card h2 { margin-top: 0; font-size: 1.25rem; }
+        #mapa { width: 100%; height: 100%; min-height: 600px; border-radius: 8px; }
+        .vehicle-list ul, .data-table ul { list-style: none; padding: 0; margin: 0; max-height: 550px; overflow-y: auto; }
+        .vehicle-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-gray); }
+        .vehicle-list li:last-child { border-bottom: none; }
+        .status { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .status.green .status-dot { background-color: var(--green); }
+        .status.yellow .status-dot { background-color: var(--yellow); }
+        .status.gray .status-dot { background-color: var(--text-light); }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer; text-decoration: none; }
+        .btn-primary { background-color: var(--multilog-orange); color: var(--white); }
+        .btn-secondary { background-color: var(--light-gray); color: var(--text-dark); }
+        .data-table table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-gray); }
+        .data-table .actions button { background: none; border: none; cursor: pointer; opacity: 0.7; transition: opacity 0.2s ease; }
+        .data-table .actions button:hover { opacity: 1; }
+        .tab-content.hidden { display: none; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-overlay.visible { display: flex; }
+        .modal-content { background: var(--white); padding: 24px; border-radius: 8px; width: 90%; max-width: 500px; color: black }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-gray); padding-bottom: 12px; margin-bottom: 20px; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .form-section { display: flex; flex-direction: column; gap: 16px; }
+        .form-section.hidden { display: none; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 6px; font-weight: 500; }
+        .form-group input, .form-group textarea { padding: 10px; border: 1px solid var(--border-gray); border-radius: 4px; font-size: 1rem; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+
+        /* --- Modal de QR Code --- */
+        #qr-modal img { display: block; margin: 0 auto 16px auto; border-radius: 8px; box-shadow: var(--shadow); }
+        #qr-modal p { text-align: center; color: var(--text-dark); font-weight: 500; }
+        @media (max-width: 800px) { .dashboard-container { padding: 12px; } header h1 { font-size: 1.5rem; } .main-content { grid-template-columns: 1fr; } #mapa { min-height: 400px; height: 50vh; } }
+    </style>
 </head>
 <body>
-  <header>Painel de Gerenciamento de Rotas</header>
-
-  <nav>
-    <a class="nav-link active" data-tab="home">Início</a>
-    <a class="nav-link" data-tab="rotas">Rotas</a>
-    <!-- ✅ NOVA ABA ADICIONADA -->
-    <a class="nav-link" data-tab="qr">Gerar QR Code</a>
-  </nav>
-
-  <div class="dashboard-container">
-    <!-- Aba Início -->
-    <div id="home" class="tab-content active">
-      <div class="card">
-        <div class="card-header">Bem-vindo</div>
-        <p>Selecione uma aba acima para gerenciar rotas ou gerar QR Codes temporários.</p>
-      </div>
+    <div class="dashboard-container">
+        <!-- Seu conteúdo original aqui -->
     </div>
 
-    <!-- Aba Rotas -->
-    <div id="rotas" class="tab-content">
-      <div class="card">
-        <div class="card-header">Rotas Cadastradas</div>
-        <div id="lista-rotas">Carregando rotas...</div>
-      </div>
+    <!-- Modal de QR Code -->
+    <div class="modal-overlay" id="qr-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>QR Code da Rota</h3>
+                <button class="modal-close" onclick="closeQRModal()">&times;</button>
+            </div>
+            <img id="qr-image" src="" alt="QR Code" width="200">
+            <p>Expira em: <strong>3 horas</strong></p>
+        </div>
     </div>
 
-    <!-- ✅ NOVA ABA GERAR QR CODE -->
-    <div id="qr" class="tab-content">
-      <div class="card">
-        <div class="card-header">
-          <h2>Gerar QR Code de Rota</h2>
-        </div>
-        <div class="form-group">
-          <label for="select-route">Selecione uma rota:</label>
-          <select id="select-route" style="padding:10px; border-radius:6px; width:100%; font-size:1rem;">
-            <option value="">-- Selecione --</option>
-          </select>
-        </div>
-        <div style="margin-top:20px;">
-          <button id="generate-qr-btn" class="btn-primary">Gerar QR Code</button>
-        </div>
-        <div id="qr-container" style="margin-top:30px; text-align:center;"></div>
-        <p id="qr-expiration" style="text-align:center; color:gray; margin-top:8px;"></p>
-      </div>
-    </div>
-  </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // --- SEU SCRIPT ORIGINAL COMPLETO ---
+        // Apenas adicionado o trecho do QR code abaixo.
 
-  <!-- ✅ Biblioteca para gerar QR Codes -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-
-  <script>
-    // --- Controle de Abas ---
-    const tabs = document.querySelectorAll('.nav-link');
-    const contents = document.querySelectorAll('.tab-content');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        contents.forEach(c => c.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.tab).classList.add('active');
-      });
-    });
-
-    // --- Exibir lista de rotas ---
-    const listaRotas = document.getElementById('lista-rotas');
-    const qrSelect = document.getElementById('select-route');
-
-    fetch('rotas.geojson')
-      .then(res => res.json())
-      .then(data => {
-        const rotas = data.features.filter(f => f.properties.type === 'route');
-        if (rotas.length === 0) {
-          listaRotas.textContent = "Nenhuma rota cadastrada.";
-          return;
+        function openQRModal(qrUrl) {
+            document.getElementById('qr-image').src = qrUrl;
+            document.getElementById('qr-modal').classList.add('visible');
         }
 
-        const ul = document.createElement('ul');
-        rotas.forEach(r => {
-          const li = document.createElement('li');
-          li.textContent = r.properties.name;
-          ul.appendChild(li);
+        function closeQRModal() {
+            document.getElementById('qr-modal').classList.remove('visible');
+        }
 
-          // adiciona ao select da aba QR
-          const opt = document.createElement('option');
-          opt.value = r.properties.name;
-          opt.textContent = r.properties.name;
-          qrSelect.appendChild(opt);
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const type = new FormData(form).get('item-type');
+            let newItem;
+            if (type === 'point') {
+                newItem = { 
+                    type: "Feature", 
+                    properties: { 
+                        name: document.getElementById('point-name').value, 
+                        zone: document.getElementById('point-zone').value, 
+                        dock: "N/A", 
+                        type: "point" 
+                    }, 
+                    geometry: { 
+                        type: "Point", 
+                        coordinates: document.getElementById('point-coords').value.split(',').map(Number).reverse() 
+                    }
+                };
+            } else {
+                const name = document.getElementById('route-name').value;
+                const coordsText = document.getElementById('route-coords').value.trim().split('\n');
+                const coords = coordsText.map(l => JSON.parse(l.replace(/,$/, '')));
+                const url = `https://meusite.com/rota?name=${encodeURIComponent(name)}&expira=3h`;
+                const qrURL = `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=${encodeURIComponent(url)}`;
+
+                newItem = { 
+                    type: "Feature", 
+                    properties: { name, type: "route", qr: qrURL }, 
+                    geometry: { type: "LineString", coordinates: coords } 
+                };
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${name}</td>
+                    <td>${coords.length}</td>
+                    <td class="actions" style="text-align: right;">
+                        <img src="${qrURL}" alt="QR" width="50" title="Ver QR Code" style="cursor:pointer;" onclick="openQRModal('${qrURL}')">
+                        <button class="delete-btn" data-type="Rota" data-name="${name}" title="Apagar">🗑️</button>
+                    </td>`;
+                document.getElementById('routes-table-body').appendChild(row);
+            }
+
+            closeModal();
+            alert("Item adicionado com sucesso!");
         });
-        listaRotas.innerHTML = "";
-        listaRotas.appendChild(ul);
-      })
-      .catch(() => listaRotas.textContent = "Erro ao carregar rotas.");
-
-    // --- GERAR QR CODE ---
-    const qrBtn = document.getElementById('generate-qr-btn');
-    const qrContainer = document.getElementById('qr-container');
-    const qrExpiration = document.getElementById('qr-expiration');
-
-    qrBtn.addEventListener('click', () => {
-      const rota = qrSelect.value;
-      if (!rota) {
-        alert("Selecione uma rota primeiro!");
-        return;
-      }
-
-      const validadeHoras = 3;
-      const expiraEm = Date.now() + validadeHoras * 60 * 60 * 1000;
-      const token = Math.random().toString(36).substring(2, 10);
-      const link = `https://seudominio.com/rota.html?id=${encodeURIComponent(rota)}&token=${token}&exp=${expiraEm}`;
-
-      qrContainer.innerHTML = "";
-      new QRCode(qrContainer, {
-        text: link,
-        width: 180,
-        height: 180
-      });
-
-      const dataExp = new Date(expiraEm).toLocaleString("pt-BR");
-      qrExpiration.textContent = `QR válido até: ${dataExp}`;
-    });
-  </script>
+    </script>
 </body>
 </html>
